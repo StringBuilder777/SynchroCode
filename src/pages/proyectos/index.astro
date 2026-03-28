@@ -1,0 +1,8 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import { ProjectsPage } from "@/components/proyectos/ProjectsPage";
+---
+
+<AppLayout title="Proyectos" currentPath="/proyectos">
+  <ProjectsPage client:load />
+</AppLayout>

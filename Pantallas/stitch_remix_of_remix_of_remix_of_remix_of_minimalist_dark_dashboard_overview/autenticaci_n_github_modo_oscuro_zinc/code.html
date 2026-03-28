@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html lang="es-419"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SynchroCode - Autenticando con GitHub</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols for Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'brand-blue': '#2e75b8',
+            'brand-bg': '#09090b',
+            'brand-card': '#18181b',
+            'brand-border': '#27272a',
+            'brand-text-primary': '#ffffff',
+            'brand-text-secondary': '#a1a1aa',
+            'brand-success': '#27AE60',
+          },
+          animation: {
+            'progress-indeterminate': 'progress 1.5s ease-in-out infinite',
+          },
+          keyframes: {
+            progress: {
+              '0%': { transform: 'translateX(-100%)' },
+              '100%': { transform: 'translateX(100%)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-animations">
+    .spinner {
+      animation: rotate 2s linear infinite;
+    }
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+    /* Material Icons Standard Sizing */
+    .material-symbols-rounded {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .icon-large { font-size: 56px !important; }
+    .icon-med { font-size: 28px !important; }
+    .icon-small { font-size: 20px !important; }
+  </style>
+</head>
+<body class="bg-[#09090b] min-h-screen flex items-center justify-center font-sans antialiased text-[#ffffff]">
+<!-- BEGIN: MainAuthCard -->
+<main class="w-full max-w-[420px] bg-[#18181b] rounded-2xl shadow-2xl p-12 flex flex-col items-center border border-[#27272a]" data-purpose="auth-container">
+<!-- BEGIN: HeaderSection -->
+<header class="flex items-center gap-3 mb-10 w-full justify-center">
+<div class="bg-[#2e75b8]/10 p-2 rounded-lg flex items-center justify-center">
+<span class="material-symbols-rounded text-brand-blue icon-med">sync_alt</span>
+</div>
+<h1 class="text-[18px] font-bold text-[#ffffff]">SynchroCode</h1>
+</header>
+<!-- END: HeaderSection -->
+<!-- BEGIN: VisualFeedbackSection -->
+<section class="flex flex-col items-center w-full mb-8">
+<!-- GitHub Icon Area -->
+<div class="w-24 h-24 bg-[#27272a] rounded-full flex items-center justify-center mb-6">
+<svg aria-hidden="true" class="w-14 h-14 text-[#ffffff]" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<!-- Spinner & Progress Bar -->
+<div class="mb-8 flex flex-col items-center">
+<div class="w-8 h-8 border-4 border-brand-blue/20 border-t-brand-blue rounded-full spinner mb-4"></div>
+<div class="w-[280px] h-1 bg-[#27272a] rounded-full overflow-hidden relative">
+<div class="absolute inset-0 bg-brand-blue w-3/5 animate-progress-indeterminate"></div>
+</div>
+</div>
+<!-- Text Header -->
+<div class="text-center mb-8">
+<h2 class="text-[22px] font-bold text-[#ffffff] mb-2">Autenticando con GitHub</h2>
+<p class="text-[14px] text-[#a1a1aa] leading-tight">Estamos verificando tu identidad con GitHub. Esto solo tomará un momento.</p>
+</div>
+</section>
+<!-- END: VisualFeedbackSection -->
+<!-- BEGIN: StatusSteps -->
+<section class="w-full flex flex-col gap-5 mb-10" data-purpose="loading-steps">
+<!-- Step 1: Completed -->
+<div class="flex items-start gap-3">
+<span class="material-symbols-rounded text-brand-success icon-small">check_circle</span>
+<span class="text-[14px] text-[#a1a1aa]">Conexión con GitHub establecida</span>
+</div>
+<!-- Step 2: In Progress -->
+<div class="flex items-start gap-3">
+<span class="material-symbols-rounded text-brand-blue icon-small spinner">autorenew</span>
+<span class="text-[14px] text-brand-blue font-bold">Verificando credenciales...</span>
+</div>
+<!-- Step 3: Pending -->
+<div class="flex items-start gap-3">
+<span class="material-symbols-rounded text-[#3f3f46] icon-small">radio_button_unchecked</span>
+<span class="text-[14px] text-[#3f3f46]">Redirigiendo al panel...</span>
+</div>
+</section>
+<!-- END: StatusSteps -->
+<!-- BEGIN: FooterLinks -->
+<footer class="w-full flex flex-col items-center gap-6">
+<a class="text-[12px] text-[#a1a1aa] hover:text-brand-blue transition-colors duration-200" href="#">
+        ← Cancelar y volver al inicio de sesión
+      </a>
+<!-- Security Note -->
+<div class="bg-[#18181b] border border-[#27272a] rounded-lg py-[10px] px-[14px] flex items-center gap-2 w-full" data-purpose="security-note">
+<span class="material-symbols-rounded text-brand-success text-[16px]">lock</span>
+<p class="text-[11px] text-[#a1a1aa] leading-tight">
+          Conexión segura. SynchroCode nunca almacena tus credenciales de GitHub.
+        </p>
+</div>
+</footer>
+<!-- END: FooterLinks -->
+</main>
+<!-- END: MainAuthCard -->
+</body></html>

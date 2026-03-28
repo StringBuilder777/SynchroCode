@@ -1,0 +1,8 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import { SetupForm } from "@/components/auth/SetupForm";
+---
+
+<AuthLayout title="Configuración inicial">
+  <SetupForm client:load />
+</AuthLayout>

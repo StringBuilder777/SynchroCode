@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SynchroCode - New Task</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2e75b8",
+                        "primary-foreground": "#ffffff",
+                        "background": "#09090b",
+                        "surface": "#18181b",
+                        "border-custom": "#27272a",
+                        "muted-foreground": "#a1a1aa",
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.375rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background text-slate-100 font-sans">
+<!-- Background Kanban Board Simulation -->
+<div class="fixed inset-0 z-0 overflow-hidden opacity-40 grayscale pointer-events-none">
+<div class="flex h-full w-full gap-6 p-8">
+<div class="flex flex-col w-72 bg-slate-200/50 dark:bg-slate-800/50 rounded-lg p-4 h-fit border border-slate-300 dark:border-slate-700">
+<div class="h-4 w-24 bg-slate-300 dark:bg-slate-700 rounded mb-4"></div>
+<div class="space-y-3">
+<div class="h-24 bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800"></div>
+<div class="h-24 bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800"></div>
+</div>
+</div>
+<div class="flex flex-col w-72 bg-slate-200/50 dark:bg-slate-800/50 rounded-lg p-4 h-fit border border-slate-300 dark:border-slate-700">
+<div class="h-4 w-24 bg-slate-300 dark:bg-slate-700 rounded mb-4"></div>
+<div class="space-y-3">
+<div class="h-24 bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800"></div>
+</div>
+</div>
+<div class="flex flex-col w-72 bg-slate-200/50 dark:bg-slate-800/50 rounded-lg p-4 h-fit border border-slate-300 dark:border-slate-700">
+<div class="h-4 w-24 bg-slate-300 dark:bg-slate-700 rounded mb-4"></div>
+<div class="space-y-3">
+<div class="h-24 bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800"></div>
+<div class="h-24 bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800"></div>
+<div class="h-24 bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4" style="background-color: rgba(9, 9, 11, 0.8);">
+<!-- Modal Content (New Task) -->
+<div class="w-full max-w-[500px] bg-surface rounded-xl shadow-2xl border border-border-custom overflow-hidden flex flex-col">
+<!-- Modal Header -->
+<div class="px-6 py-4 border-b border-border-custom flex items-center justify-between">
+<h2 class="text-xl font-semibold text-white">Crear Nueva Tarea</h2>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body / Form -->
+<div class="px-6 py-5 space-y-5 overflow-y-auto max-h-[80vh]">
+<!-- Title Field -->
+<div class="space-y-1.5">
+<label class="text-sm font-medium text-muted-foreground">Título</label>
+<input class="w-full px-3 py-2 bg-background border border-border-custom rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-white placeholder:text-muted-foreground/50" placeholder="Título de la tarea" type="text"/>
+</div>
+<!-- Description Field -->
+<div class="space-y-1.5">
+<label class="text-sm font-medium text-muted-foreground">Descripción</label>
+<textarea class="w-full px-3 py-2 bg-background border border-border-custom rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-white placeholder:text-muted-foreground/50" placeholder="Describe la tarea..." rows="4"></textarea>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Priority Select -->
+<div class="space-y-1.5">
+<label class="text-sm font-medium text-muted-foreground">Prioridad</label>
+<select class="w-full px-3 py-2 bg-background border border-border-custom rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-white placeholder:text-muted-foreground/50">
+<option disabled="" selected="" value="">Seleccionar prioridad</option>
+<option value="high">High</option>
+<option value="medium">Medium</option>
+<option value="low">Low</option>
+</select>
+</div>
+<!-- Assignee Select -->
+<div class="space-y-1.5">
+<label class="text-sm font-medium text-muted-foreground">Responsable</label>
+<select class="w-full px-3 py-2 bg-background border border-border-custom rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-white placeholder:text-muted-foreground/50">
+<option disabled="" selected="" value="">Asignar a...</option>
+<option value="1">Alex Rivera</option>
+<option value="2">Sarah Chen</option>
+<option value="3">Jordan Smith</option>
+<option value="4">Unassigned</option>
+</select>
+</div>
+</div>
+<!-- Due Date (Simulated Date Picker UI) -->
+<div class="space-y-1.5">
+<label class="text-sm font-medium text-muted-foreground">Fecha de entrega</label>
+<div class="relative">
+<input class="w-full pl-10 pr-3 py-2 bg-background border border-border-custom rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-white placeholder:text-muted-foreground/50" placeholder="Seleccionar fecha" type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">calendar_today</span>
+</div>
+</div>
+<!-- Calendar Widget (Preview/Static) -->
+<div class="border border-border-custom rounded-xl p-4 bg-background/50">
+<div class="flex items-center justify-between mb-4 px-1">
+<button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="text-sm font-bold text-white">Octubre 2023</span>
+<button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<div class="grid grid-cols-7 gap-y-1"><div class="text-[11px] font-bold text-muted-foreground text-center uppercase">D</div><div class="text-[11px] font-bold text-muted-foreground text-center uppercase">L</div><div class="text-[11px] font-bold text-muted-foreground text-center uppercase">M</div><div class="text-[11px] font-bold text-muted-foreground text-center uppercase">M</div><div class="text-[11px] font-bold text-muted-foreground text-center uppercase">J</div><div class="text-[11px] font-bold text-muted-foreground text-center uppercase">V</div><div class="text-[11px] font-bold text-muted-foreground text-center uppercase">S</div><button class="h-8 w-8 mx-auto flex items-center justify-center text-sm rounded-full text-slate-300 hover:bg-white/10">1</button><button class="h-8 w-8 mx-auto flex items-center justify-center text-sm rounded-full text-slate-300 hover:bg-white/10">2</button><button class="h-8 w-8 mx-auto flex items-center justify-center text-sm rounded-full text-slate-300 hover:bg-white/10">3</button><button class="h-8 w-8 mx-auto flex items-center justify-center text-sm rounded-full text-slate-300 hover:bg-white/10">4</button><button class="h-8 w-8 mx-auto flex items-center justify-center text-sm rounded-full bg-primary text-white font-medium">5</button><button class="h-8 w-8 mx-auto flex items-center justify-center text-sm rounded-full text-slate-300 hover:bg-white/10">6</button><button class="h-8 w-8 mx-auto flex items-center justify-center text-sm rounded-full text-slate-300 hover:bg-white/10">7</button><button class="h-8 w-8 mx-auto flex items-center justify-center text-sm rounded-full text-slate-300 hover:bg-white/10">8</button></div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-6 py-4 bg-surface border-t border-border-custom flex items-center justify-end gap-3">
+<button class="px-4 py-2 text-sm font-medium text-muted-foreground border border-border-custom rounded-lg hover:bg-white/5 transition-colors">Cancelar</button>
+<button class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:opacity-90 shadow-sm transition-colors">Guardar Tarea</button>
+</div>
+</div>
+</div>
+</body></html>

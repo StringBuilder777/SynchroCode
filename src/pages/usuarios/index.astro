@@ -1,0 +1,8 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import { UsersPage } from "@/components/usuarios/UsersPage";
+---
+
+<AppLayout title="Gestión de Usuarios" currentPath="/usuarios">
+  <UsersPage client:load />
+</AppLayout>

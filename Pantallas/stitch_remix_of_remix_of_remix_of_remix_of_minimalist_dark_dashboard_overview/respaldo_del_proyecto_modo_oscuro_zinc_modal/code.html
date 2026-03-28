@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="es-419"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SynchroCode - Gestión de Respaldo</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style data-purpose="custom-typography">
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .font-mono-custom {
+      font-family: 'ui-monospace', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+    }
+  </style>
+<style data-purpose="layout-styles">
+    .main-content {
+      margin-left: 256px;
+      background-color: #09090b;
+      padding: 32px;
+      min-height: 100vh;
+    }
+    .modal-overlay {
+      background-color: rgba(9, 9, 11, 0.85);
+      z-index: 100;
+    }
+  </style>
+</head>
+<body class="text-white bg-[#09090b]">
+<!-- BEGIN: Sidebar -->
+<aside class="w-64 bg-[#18181b] border-r border-[#27272a] flex flex-col h-screen fixed left-0 top-0 overflow-y-auto z-50">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-[#2e75b8]/10 rounded-lg p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#2e75b8] text-2xl">sync_alt</span>
+</div>
+<div>
+<h1 class="text-white text-lg font-bold leading-tight">SynchroCode</h1>
+<p class="text-[#a1a1aa] text-xs font-medium">Gestión</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#a1a1aa] hover:bg-[#27272a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#2e75b8]/10 text-[#2e75b8] transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] fill-current">view_kanban</span>
+<span class="text-sm font-medium">Proyectos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#a1a1aa] hover:bg-[#27272a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">check_box</span>
+<span class="text-sm font-medium">Tareas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#a1a1aa] hover:bg-[#27272a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">Equipo</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#a1a1aa] hover:bg-[#27272a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm font-medium">Configuración</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-[#27272a]">
+<div class="flex items-center gap-3 mb-4">
+<img alt="User Avatar" class="w-9 h-9 rounded-full object-cover border border-[#27272a]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE0LhXLczBVgo7_e-gnONeFRgCmdU0Qs44hFXHl4evFhM4-Q6OptwCBqwUgFmHE3jOCSfSZfKahGVYGNC0QuojIbR1zcyI0Ve4_TAqrMWpXvql-IWuNH2Cgrm1OTPd22-NJrddyiMx-snEI9u9bJK5tvdbr87D2vW4jnI6iNV9JFDb4mzAyvdYBdUb9dM9qpWwnt3dUWuGa9qzNKD99oQZscVL0jCkAmQSWDjZs-u9poP71zMOZLcevF3R-g8DOX6pUsJcH9m3guM"/>
+<div class="overflow-hidden">
+<p class="text-sm font-medium text-white truncate">Usuario Admin</p>
+<p class="text-xs text-[#a1a1aa] truncate">admin@synchro.com</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-9 px-4 bg-[#18181b] border border-[#27272a] text-[#a1a1aa] hover:bg-[#27272a] hover:text-red-400 text-sm font-medium transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:text-red-400 transition-colors">logout</span>
+<span>Cerrar Sesión</span>
+</button>
+</div>
+</aside>
+<!-- END: Sidebar -->
+<!-- BEGIN: Main Content -->
+<main class="main-content">
+<!-- Breadcrumb -->
+<nav aria-label="Breadcrumb" class="mb-4">
+<p class="text-[13px] text-[#a1a1aa]">Proyectos › Portal de Clientes › Respaldo</p>
+</nav>
+<!-- Header Section -->
+<div class="flex justify-between items-start mb-6">
+<div>
+<h2 class="text-2xl font-bold text-white">Respaldo del Proyecto</h2>
+<p class="text-sm text-[#a1a1aa] mt-1">Este respaldo fue generado automáticamente al archivar el proyecto.</p>
+</div>
+<div class="flex items-center gap-2 bg-[#18181b] border border-[#27272a] px-3 py-1.5 rounded text-sm text-[#a1a1aa] font-medium">
+<span class="material-symbols-outlined text-[18px]">archive</span>
+        Archivado
+      </div>
+</div>
+<!-- Info Banner -->
+<div class="bg-[#2e75b8]/10 border-l-4 border-[#2e75b8] p-4 flex items-start gap-3 mb-8">
+<span class="material-symbols-outlined text-[#2e75b8]">info</span>
+<p class="text-sm text-[#e2e8f0] leading-relaxed">
+        El sistema genera un único respaldo en el momento en que el proyecto es archivado. Este respaldo conserva el estado completo del proyecto: tareas, equipo, métricas, chat y archivos adjuntos.
+      </p>
+</div>
+<!-- Grid Layout -->
+<div class="flex flex-col lg:flex-row gap-6">
+<!-- LEFT COLUMN: Backup Details (60%) -->
+<section class="lg:w-[60%] flex flex-col gap-4">
+<h3 class="text-base font-bold text-white">Respaldo disponible</h3>
+<div class="bg-[#18181b] rounded-lg border border-[#27272a] shadow-sm overflow-hidden">
+<!-- Backup Main Info -->
+<div class="p-6 border-b border-[#27272a] flex items-center gap-4">
+<div class="w-12 h-12 bg-[#2e75b8]/10 text-[#2e75b8] rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">backup</span>
+</div>
+<div class="flex-grow">
+<div class="flex items-center gap-3">
+<span class="font-mono-custom font-bold text-sm text-white">respaldo_portal-de-clientes_2024-01-09</span>
+<span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-emerald-500/20">Único respaldo</span>
+</div>
+<div class="flex items-center gap-4 mt-1">
+<p class="text-xs text-[#a1a1aa]">Generado al archivar · 09 Ene 2024, 14:32</p>
+<span class="w-1 h-1 bg-[#27272a] rounded-full"></span>
+<p class="text-xs text-[#a1a1aa] font-medium">3.1 MB</p>
+</div>
+</div>
+</div>
+<!-- Statistics Grid -->
+<div class="grid grid-cols-2 border-b border-[#27272a]">
+<div class="p-4 border-r border-[#27272a]">
+<p class="text-[11px] text-[#a1a1aa] uppercase font-bold tracking-tight mb-1">Tareas incluidas</p>
+<p class="text-sm font-bold text-white">40 tareas <span class="text-[#a1a1aa] font-normal">(31 completadas, 9 pendientes)</span></p>
+</div>
+<div class="p-4">
+<p class="text-[11px] text-[#a1a1aa] uppercase font-bold tracking-tight mb-1">Miembros registrados</p>
+<p class="text-sm font-bold text-white">5 miembros del equipo</p>
+</div>
+<div class="p-4 border-t border-r border-[#27272a]">
+<p class="text-[11px] text-[#a1a1aa] uppercase font-bold tracking-tight mb-1">Mensajes de chat</p>
+<p class="text-sm font-bold text-white">127 mensajes guardados</p>
+</div>
+<div class="p-4 border-t border-[#27272a]">
+<p class="text-[11px] text-[#a1a1aa] uppercase font-bold tracking-tight mb-1">Evidencias adjuntas</p>
+<p class="text-sm font-bold text-white">14 archivos</p>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="p-6 bg-[#1e1e21] flex gap-3">
+<button class="bg-[#2e75b8] hover:bg-[#256096] text-white px-6 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">settings_backup_restore</span>
+              Restaurar proyecto
+            </button>
+<button class="bg-[#18181b] hover:bg-[#27272a] border border-[#27272a] text-white px-6 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+              Descargar respaldo
+            </button>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Metadata (40%) -->
+<aside class="lg:w-[40%] flex flex-col gap-6">
+<!-- Status Card -->
+<div class="bg-[#18181b] rounded-lg border border-[#27272a] shadow-sm p-5" data-purpose="archived-project-status">
+<h4 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Estado del proyecto archivado</h4>
+<div class="space-y-4">
+<div class="flex justify-between border-b border-[#27272a] pb-2">
+<span class="text-xs text-[#a1a1aa]">Nombre</span>
+<span class="text-xs font-bold">Portal de Clientes</span>
+</div>
+<div class="flex justify-between border-b border-[#27272a] pb-2">
+<span class="text-xs text-[#a1a1aa]">Archivado el</span>
+<span class="text-xs font-bold">09 Ene 2024</span>
+</div>
+<div class="flex justify-between border-b border-[#27272a] pb-2">
+<span class="text-xs text-[#a1a1aa]">Archivado por</span>
+<span class="text-xs font-bold">Admin Usuario</span>
+</div>
+<div class="mt-4">
+<div class="flex justify-between mb-1.5">
+<span class="text-[11px] font-bold text-[#a1a1aa] uppercase">Progreso final</span>
+<span class="text-[11px] font-bold text-[#2e75b8]">78%</span>
+</div>
+<div class="w-full bg-[#27272a] rounded-full h-2">
+<div class="bg-[#2e75b8] h-2 rounded-full" style="width: 78%"></div>
+</div>
+<p class="text-[11px] text-[#a1a1aa] mt-2">31 de 40 tareas completadas</p>
+</div>
+</div>
+</div>
+<!-- Contents Card -->
+<div class="bg-[#18181b] rounded-lg border border-[#27272a] shadow-sm p-5" data-purpose="backup-contents">
+<h4 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">¿Qué incluye este respaldo?</h4>
+<ul class="space-y-3 mb-6">
+<li class="flex items-center gap-3 text-sm text-[#e2e8f0]">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">check_circle</span>
+              Listado completo de tareas y subtareas
+            </li>
+<li class="flex items-center gap-3 text-sm text-[#e2e8f0]">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">check_circle</span>
+              Comentarios y retroalimentación
+            </li>
+<li class="flex items-center gap-3 text-sm text-[#e2e8f0]">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">check_circle</span>
+              Roles y permisos del equipo
+            </li>
+<li class="flex items-center gap-3 text-sm text-[#e2e8f0]">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">check_circle</span>
+              Evidencias y documentos adjuntos
+            </li>
+<li class="flex items-center gap-3 text-sm text-[#e2e8f0]">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">check_circle</span>
+              Historial de chat y notificaciones
+            </li>
+</ul>
+<div class="bg-amber-500/10 border-l-4 border-amber-500 p-3 rounded-lg flex gap-3">
+<span class="material-symbols-outlined text-amber-400 text-[20px] shrink-0">warning</span>
+<p class="text-[11px] text-amber-200 font-medium leading-tight">
+              Aviso: El proyecto se encuentra en modo de solo lectura. No se pueden generar más respaldos manuales para proyectos ya archivados.
+            </p>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- END: Main Content -->
+<!-- BEGIN: Restoration Modal Overlay -->
+<div class="fixed inset-0 modal-overlay flex items-center justify-center p-4">
+<!-- Modal Container -->
+<div aria-modal="true" class="bg-[#18181b] rounded-xl shadow-2xl w-full max-w-[450px] overflow-hidden border border-[#27272a]" role="dialog">
+<div class="p-8 text-center">
+<!-- Icon Section -->
+<div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-4xl">restore_from_trash</span>
+</div>
+<!-- Text Section -->
+<h2 class="text-xl font-bold text-white mb-2">¿Restaurar este proyecto?</h2>
+<p class="text-sm text-[#a1a1aa] leading-relaxed mb-6">
+          El proyecto <span class="font-bold text-white">'Portal de Clientes'</span> será restaurado al estado en que se encontraba el 09 Ene 2024. Volverá a aparecer como proyecto activo.
+        </p>
+<!-- Warning Banner inside Modal -->
+<div class="bg-amber-500/10 border-l-4 border-amber-500 p-4 flex items-start gap-3 mb-8 text-left">
+<span class="material-symbols-outlined text-amber-400 text-[20px]">warning</span>
+<p class="text-[12px] text-amber-200 font-medium">
+            Cualquier cambio realizado después del archivado no podrá recuperarse.
+          </p>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-3">
+<button class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold transition-colors">
+            Confirmar restauración
+          </button>
+<button class="w-full bg-[#18181b] hover:bg-[#27272a] border border-[#27272a] text-[#a1a1aa] py-3 rounded-lg font-medium transition-colors">
+            Cancelar
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- END: Restoration Modal Overlay -->
+</body></html>

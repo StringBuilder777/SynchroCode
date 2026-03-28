@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SynchroCode - Gestión de Usuarios</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#2e77b8",
+              "primary-dark": "#235a8c",
+              "background-light": "#f6f7f8",
+              "background-dark": "#13191f",
+              zinc: {
+                50: "#fafafa",
+                100: "#f4f4f5",
+                200: "#e4e4e7",
+                300: "#d4d4d8",
+                400: "#a1a1aa",
+                500: "#71717a",
+                600: "#52525b",
+                700: "#3f3f46",
+                800: "#27272a",
+                900: "#18181b",
+                950: "#09090b",
+              }
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+              sans: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.375rem", // md
+              lg: "0.5rem",
+              xl: "0.75rem",
+              "2xl": "1rem",
+              full: "9999px"
+            },
+            boxShadow: {
+              'soft': '0 2px 10px rgba(0, 0, 0, 0.03)',
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-zinc-900 antialiased min-h-screen flex flex-col md:flex-row overflow-hidden">
+<aside class="w-64 bg-white border-r border-slate-200 flex flex-col h-screen fixed left-0 top-0 overflow-y-auto z-50">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary/10 rounded-lg p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-2xl">sync_alt</span>
+</div>
+<div>
+<h1 class="text-slate-900 text-lg font-bold leading-tight">SynchroCode</h1>
+<p class="text-slate-500 text-xs font-medium">Gestión</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] fill-current">view_kanban</span>
+<span class="text-sm font-medium">Proyectos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">check_box</span>
+<span class="text-sm font-medium">Tareas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">Usuarios</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm font-medium">Configuración</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-slate-100">
+<div class="flex items-center gap-3 mb-4">
+<img alt="User Avatar" class="w-9 h-9 rounded-full object-cover border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE0LhXLczBVgo7_e-gnONeFRgCmdU0Qs44hFXHl4evFhM4-Q6OptwCBqwUgFmHE3jOCSfSZfKahGVYGNC0QuojIbR1zcyI0Ve4_TAqrMWpXvql-IWuNH2Cgrm1OTPd22-NJrddyiMx-snEI9u9bJK5tvdbr87D2vW4jnI6iNV9JFDb4mzAyvdYBdUb9dM9qpWwnt3dUWuGa9qzNKD99oQZscVL0jCkAmQSWDjZs-u9poP71zMOZLcevF3R-g8DOX6pUsJcH9m3guM"/>
+<div class="overflow-hidden">
+<p class="text-sm font-medium text-slate-900 truncate">Admin User</p>
+<p class="text-xs text-slate-500 truncate">admin@synchro.com</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-9 px-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-red-600 text-sm font-medium transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:text-red-600 transition-colors">logout</span>
+<span>Cerrar Sesión</span>
+</button>
+</div>
+</aside>
+<main class="flex-1 h-screen overflow-hidden flex flex-col bg-background-light relative md:ml-64">
+<header class="h-16 flex items-center justify-between px-8 bg-white border-b border-zinc-200 flex-shrink-0">
+<div>
+<div class="flex items-center text-xs text-zinc-500 mb-1">
+<span>Admin</span>
+<span class="material-symbols-outlined text-[12px] mx-1">chevron_right</span>
+<span class="text-zinc-900">Usuarios</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative p-2 text-zinc-500 hover:text-zinc-700 transition-colors rounded-full hover:bg-zinc-100">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-auto p-8">
+<div class="max-w-[1200px] mx-auto space-y-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-2xl font-bold tracking-tight text-zinc-900">Gestión de Usuarios</h2>
+<p class="text-zinc-500 text-sm mt-1">Administra los permisos y accesos de los miembros del equipo.</p>
+</div>
+<button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-white hover:bg-primary-dark h-10 px-4 py-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Nuevo Usuario
+                    </button>
+</div>
+<div class="flex flex-col sm:flex-row gap-3 items-end sm:items-center bg-white p-4 rounded-lg border border-zinc-200 shadow-soft">
+<div class="relative w-full sm:w-72">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</span>
+<input class="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-9" placeholder="Buscar usuario..." type="text"/>
+</div>
+<div class="flex gap-3 w-full sm:w-auto">
+<div class="relative w-full sm:w-[180px]">
+<select class="flex h-10 w-full items-center justify-between rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none text-zinc-700">
+<option disabled="" selected="" value="">Filtrar por rol</option>
+<option value="admin">Administrador</option>
+<option value="manager">Manager</option>
+<option value="developer">Developer</option>
+<option value="viewer">Viewer</option>
+</select>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+<div class="relative w-full sm:w-[180px]">
+<select class="flex h-10 w-full items-center justify-between rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none text-zinc-700">
+<option disabled="" selected="" value="">Estado</option>
+<option value="active">Activo</option>
+<option value="inactive">Inactivo</option>
+</select>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+</div>
+<button class="ml-auto text-sm text-zinc-500 hover:text-primary underline decoration-dotted underline-offset-4">
+                        Limpiar filtros
+                    </button>
+</div>
+<div class="rounded-lg border border-zinc-200 bg-white shadow-soft overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-sm text-left">
+<thead class="text-xs text-zinc-500 uppercase bg-zinc-50/50 border-b border-zinc-200">
+<tr>
+<th class="px-6 py-3 font-medium w-16 text-center" scope="col">Avatar</th>
+<th class="px-6 py-3 font-medium" scope="col">Nombre completo</th>
+<th class="px-6 py-3 font-medium" scope="col">Correo electrónico</th>
+<th class="px-6 py-3 font-medium" scope="col">Rol</th>
+<th class="px-6 py-3 font-medium" scope="col">Estado</th>
+<th class="px-6 py-3 font-medium text-right" scope="col">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-zinc-100">
+<tr class="bg-white hover:bg-zinc-50/50 transition-colors group">
+<td class="px-6 py-4 flex justify-center">
+<div class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-semibold text-xs border border-blue-200">
+                                            JP
+                                        </div>
+</td>
+<td class="px-6 py-4 font-medium text-zinc-900">
+                                        Juan Pérez
+                                    </td>
+<td class="px-6 py-4 text-zinc-500">
+                                        juan.perez@synchrocode.com
+                                    </td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-zinc-100 text-zinc-900 hover:bg-zinc-100/80">
+                                            Admin
+                                        </div>
+</td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-100/80 gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Activo
+                                        </div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-500">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+<span class="sr-only">Editar</span>
+</button>
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-400">
+<span class="material-symbols-outlined text-[18px]">block</span>
+<span class="sr-only">Desactivar</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="bg-white hover:bg-zinc-50/50 transition-colors group">
+<td class="px-6 py-4 flex justify-center">
+<div class="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-purple-700 font-semibold text-xs border border-purple-200">
+                                            AL
+                                        </div>
+</td>
+<td class="px-6 py-4 font-medium text-zinc-900">
+                                        Ana López
+                                    </td>
+<td class="px-6 py-4 text-zinc-500">
+                                        ana.lopez@synchrocode.com
+                                    </td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-zinc-100 text-zinc-900 hover:bg-zinc-100/80">
+                                            Manager
+                                        </div>
+</td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-100/80 gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Activo
+                                        </div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-500">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-400">
+<span class="material-symbols-outlined text-[18px]">block</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="bg-white hover:bg-zinc-50/50 transition-colors group">
+<td class="px-6 py-4 flex justify-center">
+<div class="flex h-9 w-9 items-center justify-center rounded-full bg-amber-100 text-amber-700 font-semibold text-xs border border-amber-200">
+                                            CG
+                                        </div>
+</td>
+<td class="px-6 py-4 font-medium text-zinc-900">
+                                        Carlos García
+                                    </td>
+<td class="px-6 py-4 text-zinc-500">
+                                        carlos.garcia@synchrocode.com
+                                    </td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-zinc-100 text-zinc-900 hover:bg-zinc-100/80">
+                                            Developer
+                                        </div>
+</td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-zinc-100 text-zinc-500 hover:bg-zinc-100/80 gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+                                            Inactivo
+                                        </div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-500">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-400">
+<span class="material-symbols-outlined text-[18px]">block</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="bg-white hover:bg-zinc-50/50 transition-colors group">
+<td class="px-6 py-4 flex justify-center">
+<div class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-semibold text-xs border border-indigo-200">
+                                            MR
+                                        </div>
+</td>
+<td class="px-6 py-4 font-medium text-zinc-900">
+                                        Maria Rodríguez
+                                    </td>
+<td class="px-6 py-4 text-zinc-500">
+                                        maria.rodriguez@synchrocode.com
+                                    </td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-zinc-100 text-zinc-900 hover:bg-zinc-100/80">
+                                            Viewer
+                                        </div>
+</td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-100/80 gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Activo
+                                        </div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-500">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-400">
+<span class="material-symbols-outlined text-[18px]">block</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="bg-white hover:bg-zinc-50/50 transition-colors group">
+<td class="px-6 py-4 flex justify-center">
+<div class="flex h-9 w-9 items-center justify-center rounded-full bg-orange-100 text-orange-700 font-semibold text-xs border border-orange-200">
+                                            LM
+                                        </div>
+</td>
+<td class="px-6 py-4 font-medium text-zinc-900">
+                                        Luis Martínez
+                                    </td>
+<td class="px-6 py-4 text-zinc-500">
+                                        luis.martinez@synchrocode.com
+                                    </td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-zinc-100 text-zinc-900 hover:bg-zinc-100/80">
+                                            Developer
+                                        </div>
+</td>
+<td class="px-6 py-4">
+<div class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-100/80 gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Activo
+                                        </div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-500">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-zinc-400">
+<span class="material-symbols-outlined text-[18px]">block</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex items-center justify-between px-4 py-3 border-t border-zinc-200 bg-white">
+<div class="text-sm text-zinc-500">
+                            Mostrando <span class="font-medium text-zinc-900">1</span> a <span class="font-medium text-zinc-900">5</span> de <span class="font-medium text-zinc-900">12</span> resultados
+                        </div>
+<div class="flex items-center space-x-2">
+<button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-zinc-200 bg-white hover:bg-zinc-100 hover:text-zinc-900 h-9 px-3" disabled="">
+                                Anterior
+                            </button>
+<button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-zinc-200 bg-white hover:bg-zinc-100 hover:text-zinc-900 h-9 px-3">
+                                Siguiente
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

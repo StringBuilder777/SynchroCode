@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2E75B6",
+                        "background-light": "#F5F5F5",
+                        "background-dark": "#221610",
+                        "success": "#27AE60",
+                        "destructive": "#C0392B",
+                        "warning": "#F39C12",
+                        "secondary-text": "#444444",
+                        "custom-border": "#CCCCCC"
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-[#F5F5F5] dark:bg-background-dark text-slate-900 dark:text-slate-100">
+<!-- Sidebar -->
+<aside class="w-64 bg-white border-r flex flex-col h-screen fixed left-0 top-0 overflow-y-auto z-50 border-[#CCCCCC]"> <div class="p-6"> <div class="flex items-center gap-3 mb-8"> <div class="bg-primary/10 rounded-lg p-2 flex items-center justify-center"> <span class="material-symbols-outlined text-primary text-2xl">sync_alt</span> </div> <div> <h1 class="text-slate-900 text-lg font-bold leading-tight">SynchroCode</h1> <p class="text-xs font-medium text-[#444444]">Gestión</p> </div> </div> <nav class="flex flex-col gap-1"> <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors text-[#444444]" href="#"> <span class="material-symbols-outlined text-[20px]">grid_view</span> <span class="text-sm font-medium">Dashboard</span> </a> <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary transition-colors" href="#"> <span class="material-symbols-outlined text-[20px] fill-current">view_kanban</span> <span class="text-sm font-medium">Proyectos</span> </a> <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors text-[#444444]" href="#"> <span class="material-symbols-outlined text-[20px]">check_box</span> <span class="text-sm font-medium">Tareas</span> </a> <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors text-[#444444]" href="#"> <span class="material-symbols-outlined text-[20px]">group</span> <span class="text-sm font-medium">Equipo</span> </a> <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors text-[#444444]" href="#"> <span class="material-symbols-outlined text-[20px]">settings</span> <span class="text-sm font-medium">Configuración</span> </a> </nav> </div> <div class="mt-auto p-6 border-t border-[#CCCCCC]"> <div class="flex items-center gap-3 mb-4"> <img alt="User Avatar" class="w-9 h-9 rounded-full object-cover border border-[#CCCCCC]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE0LhXLczBVgo7_e-gnONeFRgCmdU0Qs44hFXHl4evFhM4-Q6OptwCBqwUgFmHE3jOCSfSZfKahGVYGNC0QuojIbR1zcyI0Ve4_TAqrMWpXvql-IWuNH2Cgrm1OTPd22-NJrddyiMx-snEI9u9bJK5tvdbr87D2vW4jnI6iNV9JFDb4mzAyvdYBdUb9dM9qpWwnt3dUWuGa9qzNKD99oQZscVL0jCkAmQSWDjZs-u9poP71zMOZLcevF3R-g8DOX6pUsJcH9m3guM"/> <div class="overflow-hidden"> <p class="text-sm font-medium text-slate-900 truncate">Admin User</p> <p class="text-xs truncate text-[#444444]">admin@synchro.com</p> </div> </div> <button class="w-full flex items-center justify-center gap-2 rounded-lg h-9 px-4 bg-white border text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors group border-[#CCCCCC] hover:text-[#C0392B]"> <span class="material-symbols-outlined text-[18px] transition-colors group-hover:text-[#C0392B]">logout</span> <span>Cerrar Sesión</span> </button> </div> </aside>
+<!-- Main Content -->
+<main class="ml-64 min-h-screen p-8">
+<div class="max-w-5xl mx-auto">
+<!-- Header Sección -->
+<div class="flex items-center gap-4 mb-8">
+<div class="p-3 bg-slate-900 text-white rounded-xl">
+<span class="material-symbols-outlined text-3xl">terminal</span>
+</div>
+<div>
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Rediseño Web Core</h2>
+<p class="dark:text-slate-400 text-[#444444]">ID de Proyecto: SWC-2024</p>
+</div>
+</div>
+<!-- Tabs Navigation -->
+<div class="border-b dark:border-slate-800 mb-8 overflow-x-auto border-[#CCCCCC]">
+<nav class="flex gap-8 min-w-max">
+<a class="pb-4 px-1 text-sm font-medium hover:text-slate-700 dark:hover:text-slate-300 border-b-2 border-transparent text-[#444444]" href="#">Tareas</a>
+<a class="pb-4 px-1 text-sm font-medium hover:text-slate-700 dark:hover:text-slate-300 border-b-2 border-transparent text-[#444444]" href="#">Equipo</a>
+<a class="pb-4 px-1 text-sm font-medium hover:text-slate-700 dark:hover:text-slate-300 border-b-2 border-transparent text-[#444444]" href="#">Métricas</a>
+<a class="pb-4 px-1 text-sm font-medium hover:text-slate-700 dark:hover:text-slate-300 border-b-2 border-transparent text-[#444444]" href="#">Chat</a>
+<a class="pb-4 px-1 text-sm font-bold text-primary border-b-2 border-primary" href="#">GitHub</a>
+</nav>
+</div>
+<!-- GitHub Tab Content -->
+<div class="space-y-6">
+<!-- Status & Title -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Automatización de GitHub</h3>
+<p class="dark:text-slate-400 mt-1 text-[#444444]">Gestiona la integración entre tus repositorios y el flujo de trabajo de SynchroCode.</p>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 bg-[#27AE60]/10 border border-[#27AE60]/20 rounded-full">
+<span class="flex h-2 w-2 rounded-full bg-[#27AE60]"></span>
+<span class="text-xs font-semibold text-[#27AE60] uppercase tracking-wider">Webhook Conectado</span>
+</div>
+</div>
+<!-- Webhook Card Explainer -->
+<div class="bg-primary/5 border border-primary/20 rounded-xl p-6 flex gap-5 items-start">
+<div class="bg-primary/10 p-3 rounded-lg text-primary">
+<span class="material-symbols-outlined text-2xl">auto_fix_high</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-slate-900 dark:text-white mb-2">Automatización vía Webhook</h4>
+<p class="dark:text-slate-300 leading-relaxed max-w-2xl text-[#444444]">
+                            Cuando un Pull Request vinculado a una tarea es mergeado en GitHub, SynchroCode marcará automáticamente la tarea como <span class="font-semibold text-slate-900 dark:text-white px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-xs uppercase">Terminada</span>. Esto elimina la necesidad de actualizaciones manuales de estado.
+                        </p>
+</div>
+<div class="hidden lg:block w-32 h-20 bg-primary/10 rounded-lg overflow-hidden border border-primary/10">
+<div class="w-full h-full opacity-30 bg-gradient-to-br from-primary to-orange-200" data-alt="Patrón de gradiente abstracto naranja"></div>
+</div>
+</div>
+<!-- Configuration Sections -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Toggle Switch Card -->
+<div class="lg:col-span-1 bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl p-6 shadow-sm border-[#CCCCCC]">
+<div class="flex flex-col h-full justify-between">
+<div>
+<h5 class="font-bold text-slate-900 dark:text-white mb-2">Configuración rápida</h5>
+<p class="text-sm dark:text-slate-400 mb-6 text-[#444444]">Habilita o deshabilita la sincronización de estados instantáneamente.</p>
+</div>
+<div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Cierre automático</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="flex-1 block w-full px-3 py-2 bg-white border border-[#CCCCCC] rounded-lg text-sm text-[#444444] focus:outline-none" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- URL & Secret Settings -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl p-6 shadow-sm space-y-6 border-[#CCCCCC]">
+<div>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Payload URL</label>
+<div class="flex gap-2">
+<input class="flex-1 block w-full px-3 py-2 bg-white border border-[#CCCCCC] rounded-lg text-sm text-[#444444] focus:outline-none" readonly="" type="text" value="https://api.synchrocode.com/hooks/github/proj_88291-swc"/>
+<button class="px-3 py-2 bg-white dark:bg-slate-800 border dark:border-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center text-[#444444] border-[#CCCCCC]">
+<span class="material-symbols-outlined text-xl">content_copy</span>
+</button>
+</div>
+<p class="text-[11px] text-slate-400 mt-1.5">Copia esta URL en la configuración de Webhooks de tu repositorio de GitHub.</p>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Webhook Secret</label>
+<div class="flex gap-2">
+<div class="relative flex-1">
+<input class="flex-1 block w-full px-3 py-2 bg-white border border-[#CCCCCC] rounded-lg text-sm text-[#444444] focus:outline-none" readonly="" type="password" value="sc_secret_live_8821_99x_0129"/>
+<button class="absolute right-2 top-1.5 text-slate-400 hover:text-slate-600">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</button>
+</div>
+<button class="px-3 py-2 bg-white dark:bg-slate-800 border dark:border-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center text-[#444444] border-[#CCCCCC]">
+<span class="material-symbols-outlined text-xl">content_copy</span>
+</button>
+</div>
+<p class="text-[11px] text-slate-400 mt-1.5">Usa este secreto para validar la firma de los eventos entrantes (X-Hub-Signature-256).</p>
+</div>
+</div>
+</div>
+<!-- GitHub Link Status Card -->
+<div class="bg-slate-900 dark:bg-primary/20 text-white rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-800">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+<img alt="GitHub Logo" class="w-7 h-7" data-alt="Logotipo de GitHub negro" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkiL7PE10AYjKAL4yXeo8MtZ25vVwHJ0lUx7dbXY1xj9Y9gGZLHhqKODQlDi1Ijl0RHMzVtCinPkM5tLTEnXtFLG1_eqeqsyCv27ERvg40Fycm05Lx1ZalT8lHMv5jtuRrDqfeZke_BzbI-SxGtZd1uNOdVQi1_OGFY74CvlTN73G-CUVsufbGXBqDTtTqh-S8GF386IIvxChnWDMwwTtyp-Aadfp7Ehhf5jvy51yvcX9wQ4u-qeuWWcQAbvs55d5IjNFMF1yfGr8"/>
+</div>
+<div>
+<h4 class="font-bold">Repositorio vinculado</h4>
+<p class="text-slate-300 text-sm">synchro-org/core-frontend-v2 (Rama: main)</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">Configurar Eventos</button>
+<button class="px-4 py-2 bg-primary hover:bg-primary/90 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-primary/20">Probar Conexión</button>
+</div>
+</div>
+<!-- Event History Table (Minimalist) -->
+<div class="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden shadow-sm border-[#CCCCCC]">
+<div class="p-4 border-b dark:border-slate-800 flex justify-between items-center border-[#CCCCCC]">
+<h5 class="font-bold text-slate-900 dark:text-white">Registro de Actividad Reciente</h5>
+<button class="text-primary text-xs font-bold hover:underline">Ver todo el historial</button>
+</div>
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-800/50 text-[10px] uppercase font-bold tracking-wider text-[#444444]">
+<tr>
+<th class="px-6 py-3">Evento</th>
+<th class="px-6 py-3">Tarea Afectada</th>
+<th class="px-6 py-3">Estado HTTP</th>
+<th class="px-6 py-3 text-right">Fecha</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-500 text-sm">rebase</span>
+<span class="text-sm font-medium">pull_request.merged</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-sm dark:text-slate-400 text-[#444444]">#432 - Refactor Header Mobile</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-semibold text-[#27AE60] uppercase tracking-wider">200 OK</span>
+</td>
+<td class="px-6 py-4 text-right text-xs text-slate-400">Hace 12 min</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-500 text-sm">rebase</span>
+<span class="text-sm font-medium">pull_request.merged</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-sm dark:text-slate-400 text-[#444444]">#430 - Update Auth Flow</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-semibold text-[#27AE60] uppercase tracking-wider">200 OK</span>
+</td>
+<td class="px-6 py-4 text-right text-xs text-slate-400">Hoy, 09:45 AM</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</body></html>

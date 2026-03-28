@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2e75b8",
+                        "background-dark": "#09090b",
+                        "card-dark": "#18181b",
+                        "border-dark": "#27272a",
+                        "destructive": "#ef4444",
+                        "success": "#22c55e",
+                        "warning": "#f59e0b",
+                        "secondary-text": "#a1a1aa",
+                        "main-text": "#ffffff"
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }</script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-[#09090b] text-[#ffffff] min-h-screen font-sans">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar refined: White background, user profile at bottom -->
+<aside class="w-64 bg-[#18181b] border-r border-[#27272a] flex flex-col h-screen fixed left-0 top-0 overflow-y-auto z-50">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary/10 rounded-lg p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-2xl">sync_alt</span>
+</div>
+<div>
+<h1 class="text-white text-lg font-bold leading-tight">SynchroCode</h1>
+<p class="text-[#a1a1aa] text-xs font-medium text-left">Gestión</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#a1a1aa] hover:bg-[#27272a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#2e75b8]/10 text-[#2e75b8] transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] fill-current">view_kanban</span>
+<span class="text-sm font-medium">Proyectos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#a1a1aa] hover:bg-[#27272a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">check_box</span>
+<span class="text-sm font-medium">Tareas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#a1a1aa] hover:bg-[#27272a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">Equipo</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#a1a1aa] hover:bg-[#27272a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm font-medium">Configuración</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-[#27272a]">
+<div class="flex items-center gap-3 mb-4">
+<img alt="User Avatar" class="w-9 h-9 rounded-full object-cover border border-[#CCCCCC]" data-alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE0LhXLczBVgo7_e-gnONeFRgCmdU0Qs44hFXHl4evFhM4-Q6OptwCBqwUgFmHE3jOCSfSZfKahGVYGNC0QuojIbR1zcyI0Ve4_TAqrMWpXvql-IWuNH2Cgrm1OTPd22-NJrddyiMx-snEI9u9bJK5tvdbr87D2vW4jnI6iNV9JFDb4mzAyvdYBdUb9dM9qpWwnt3dUWuGa9qzNKD99oQZscVL0jCkAmQSWDjZs-u9poP71zMOZLcevF3R-g8DOX6pUsJcH9m3guM"/>
+<div class="overflow-hidden">
+<p class="text-[#a1a1aa] text-xs font-medium text-left">Admin User</p>
+<p class="text-[#a1a1aa] text-xs font-medium text-left">admin@synchro.com</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-9 px-4 bg-white border text-slate-700 hover:bg-slate-50 hover:text-red-600 text-sm font-medium transition-colors group border-[#CCCCCC] hover:text-[#C0392B]">
+<span class="material-symbols-outlined text-[18px] group-hover:text-red-600 transition-colors">logout</span>
+<span>Cerrar Sesión</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-hidden pl-64 bg-[#09090b]">
+<!-- Project Header -->
+<header class="bg-[#09090b] border-b border-[#27272a] p-6">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">hub</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h1 class="text-2xl font-bold tracking-tight text-white">Portal de clientes v2</h1>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#27AE60]/10 text-[#27AE60]">
+                                    Activo
+                                </span>
+</div>
+<div class="flex items-center gap-4 mt-1">
+<span class="text-[#a1a1aa] text-xs font-medium text-left">
+<span class="material-symbols-outlined text-base">calendar_today</span>
+                                    Creado: 15 Oct, 2023
+                                </span>
+<span class="text-[#a1a1aa] text-xs font-medium text-left">
+<span class="material-symbols-outlined text-base">update</span>
+                                    Actualizado: hace 2 horas
+                                </span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-4 py-2 border border-[#27272a] rounded-lg hover:bg-[#18181b] text-white text-sm font-medium transition-colors">
+                            Editar Proyecto
+                        </button>
+<button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm font-medium transition-colors" style="background-color: #2E75B6;">
+                            Compartir
+                        </button>
+</div>
+</div>
+<!-- Tab Navigation -->
+<div class="flex gap-8 mt-6">
+<a class="text-[#a1a1aa] text-xs font-medium text-left hover:text-white transition-colors flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-xl">info</span> Resumen
+                    </a>
+<a class="text-[#a1a1aa] text-xs font-medium text-left hover:text-white transition-colors flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-xl">list</span> Tareas
+                    </a>
+<a class="pb-3 text-sm font-semibold text-[#2e75b8] border-b-2 border-[#2e75b8] flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-xl">code</span> GitHub
+                    </a>
+<a class="text-[#a1a1aa] text-xs font-medium text-left hover:text-white transition-colors flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-xl">folder_open</span> Archivos
+                    </a>
+</div>
+</header>
+<!-- Active Tab Content: GitHub Integration (CU-27) -->
+<div class="flex-1 overflow-y-auto p-8">
+<div class="max-w-4xl mx-auto space-y-6">
+<!-- Status Card: Unlinked State -->
+<div class="bg-[#18181b] rounded-xl border border-[#27272a] overflow-hidden shadow-sm">
+<div class="p-8 text-center flex flex-col items-center">
+<div class="w-16 h-16 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 bg-white">
+<span class="material-symbols-outlined text-4xl text-slate-400">link_off</span>
+</div>
+<h2 class="text-white font-bold">Repositorio no vinculado</h2>
+<p class="text-[#a1a1aa] text-xs font-medium text-left">
+                                Conecta este proyecto con un repositorio de GitHub para ver commits, pull requests y gestionar el despliegue automático.
+                            </p>
+<button class="mt-6 flex items-center gap-2 px-6 py-2.5 bg-[#2E75B6] text-white rounded-lg hover:opacity-90 font-bold transition-all transform active:scale-95 shadow-lg">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
+</svg>
+                                Conectar con GitHub
+                            </button>
+</div>
+</div>
+<!-- Step 2: Simulated Repository Selector -->
+<div class="bg-[#18181b] rounded-xl border border-[#27272a] overflow-hidden shadow-sm">
+<div class="p-6 border-b dark:border-slate-800 flex justify-between items-center border-[#CCCCCC]">
+<div>
+<h3 class="text-white font-bold">Seleccionar Repositorio</h3>
+<p class="text-[#a1a1aa] text-xs font-medium text-left">Elige un repositorio de tu cuenta "usuario_admin"</p>
+</div>
+<span class="text-xs font-mono dark:bg-slate-800 px-2 py-1 rounded bg-white">CU-27 Paso 2</span>
+</div>
+<div class="p-6 space-y-4">
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-slate-400">
+<span class="material-symbols-outlined">search</span>
+</span>
+<input class="w-full pl-10 pr-4 py-2 border border-[#27272a] rounded-lg bg-[#09090b] text-[#ffffff] focus:ring-[#2e75b8] focus:border-[#2e75b8] text-sm" disabled="" placeholder="Buscar repositorios..." type="text"/>
+</div>
+<div class="space-y-2 max-h-60 overflow-y-auto pr-2">
+<div class="flex items-center justify-between p-3 border border-[#27272a] rounded-lg bg-[#18181b]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">book</span>
+<div>
+<p class="text-sm font-semibold">portal-clientes-v2-frontend</p>
+<p class="text-[#a1a1aa] text-xs font-medium text-left">Privado • Actualizado ayer</p>
+</div>
+</div>
+<button class="px-3 py-1.5 text-xs font-bold text-[#2e75b8] bg-[#2e75b8]/10 rounded-md hover:bg-[#2e75b8]/20">Vincular</button>
+</div>
+<div class="flex items-center justify-between p-3 border border-transparent rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">book</span>
+<div>
+<p class="text-sm font-semibold">portal-clientes-v2-api</p>
+<p class="text-[#a1a1aa] text-xs font-medium text-left">Privado • Actualizado hace 3 días</p>
+</div>
+</div>
+<button class="text-[#a1a1aa] text-xs font-medium text-left hover:text-white transition-colors">Vincular</button>
+</div>
+<div class="flex items-center justify-between p-3 border border-transparent rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">book</span>
+<div>
+<p class="text-sm font-semibold">legacy-client-portal</p>
+<p class="text-[#a1a1aa] text-xs font-medium text-left">Público • Actualizado hace 1 mes</p>
+</div>
+</div>
+<button class="text-[#a1a1aa] text-xs font-medium text-left hover:text-white transition-colors">Vincular</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Additional Info Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="p-6 rounded-xl border border-[#27272a] bg-[#18181b]">
+<h4 class="text-white font-bold">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+                                Despliegue Automático
+                            </h4>
+<p class="text-[#a1a1aa] text-xs font-medium text-left">
+                                Al vincular un repositorio, puedes habilitar despliegues automáticos a entornos de staging o producción al hacer push a ramas específicas.
+                            </p>
+</div>
+<div class="p-6 rounded-xl border border-[#27272a] bg-[#18181b]">
+<h4 class="text-white font-bold">
+<span class="material-symbols-outlined text-primary">security</span>
+                                Seguridad y Permisos
+                            </h4>
+<p class="text-[#a1a1aa] text-xs font-medium text-left">
+                                DevPortal solo solicita permisos de lectura para los metadatos de los repositorios y webhooks para notificaciones en tiempo real.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

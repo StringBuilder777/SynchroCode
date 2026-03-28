@@ -1,0 +1,20 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import { ProjectDetailPage } from "@/components/proyectos/ProjectDetailPage";
+
+export function getStaticPaths() {
+  return [
+    { params: { id: "1" } },
+    { params: { id: "2" } },
+    { params: { id: "3" } },
+    { params: { id: "4" } },
+    { params: { id: "5" } },
+  ];
+}
+
+const tab = Astro.url.searchParams.get("tab") || undefined;
+---
+
+<AppLayout title="Detalle de Proyecto" currentPath="/proyectos">
+  <ProjectDetailPage initialTab={tab} client:load />
+</AppLayout>

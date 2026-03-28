@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html lang="es-419"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SynchroCode - Integración GitHub</title>
+<!-- BEGIN: External Resources -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2e75b8',
+            'primary-foreground': '#ffffff',
+            'background-dark': '#09090b',
+            'card-dark': '#18181b',
+            'border-dark': '#27272a',
+            'muted-foreground': '#a1a1aa',
+            'text-foreground': '#ffffff',
+            destructive: '#C0392B',
+            secondaryText: '#a1a1aa',
+            surface: '#09090b',
+            borderColor: '#27272a'
+          }
+        }
+      }
+    }
+  </script>
+<!-- END: External Resources -->
+<style data-purpose="custom-styling">
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #09090b;
+      color: #ffffff;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="flex">
+<!-- BEGIN: Sidebar -->
+<aside class="w-64 bg-card-dark border-r border-border-dark flex flex-col h-screen fixed left-0 top-0 overflow-y-auto z-50">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary/20 rounded-lg p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-2xl">sync_alt</span>
+</div>
+<div>
+<h1 class="text-text-foreground text-lg font-bold leading-tight">SynchroCode</h1>
+<p class="text-muted-foreground text-xs font-medium">Gestión</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-white/5 hover:text-text-foreground transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] fill-current">view_kanban</span>
+<span class="text-sm font-medium">Proyectos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-white/5 hover:text-text-foreground transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">check_box</span>
+<span class="text-sm font-medium">Tareas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-white/5 hover:text-text-foreground transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">Equipo</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-white/5 hover:text-text-foreground transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm font-medium">Configuración</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-border-dark">
+<div class="flex items-center gap-3 mb-4">
+<img alt="User Avatar" class="w-9 h-9 rounded-full object-cover border border-border-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE0LhXLczBVgo7_e-gnONeFRgCmdU0Qs44hFXHl4evFhM4-Q6OptwCBqwUgFmHE3jOCSfSZfKahGVYGNC0QuojIbR1zcyI0Ve4_TAqrMWpXvql-IWuNH2Cgrm1OTPd22-NJrddyiMx-snEI9u9bJK5tvdbr87D2vW4jnI6iNV9JFDb4mzAyvdYBdUb9dM9qpWwnt3dUWuGa9qzNKD99oQZscVL0jCkAmQSWDjZs-u9poP71zMOZLcevF3R-g8DOX6pUsJcH9m3guM"/>
+<div class="overflow-hidden">
+<p class="text-sm font-medium text-text-foreground truncate">Admin User</p>
+<p class="text-xs text-muted-foreground truncate">admin@synchro.com</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-9 px-4 bg-transparent border border-border-dark text-muted-foreground hover:bg-white/5 hover:text-red-400 text-sm font-medium transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:text-red-400 transition-colors">logout</span>
+<span>Cerrar Sesión</span>
+</button>
+</div>
+</aside>
+<!-- END: Sidebar -->
+<!-- BEGIN: Main Content -->
+<main class="ml-64 flex-1 min-h-screen p-8 bg-background-dark">
+<!-- BEGIN: Breadcrumb and Header -->
+<nav class="mb-4">
+<p class="text-[13px] text-muted-foreground">
+        Proyectos <span class="mx-1">›</span> Redesign Website <span class="mx-1">›</span> GitHub
+      </p>
+</nav>
+<header class="flex flex-col gap-4 mb-8">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<h2 class="text-[22px] font-bold text-text-foreground">Redesign Website</h2>
+<div class="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+<span class="w-2 h-2 bg-primary rounded-full"></span>
+<span class="text-sm font-medium text-primary">En progreso</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-[13px] text-muted-foreground bg-card-dark px-4 py-2 rounded-lg border border-border-dark">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span>10 Ene 2024 — 20 Mar 2024</span>
+</div>
+</div>
+<!-- BEGIN: Navigation Tabs -->
+<nav class="flex border-b border-border-dark mt-4">
+<a class="px-6 py-3 text-muted-foreground hover:text-primary transition-colors" href="#">Tareas</a>
+<a class="px-6 py-3 text-muted-foreground hover:text-primary transition-colors" href="#">Equipo</a>
+<a class="px-6 py-3 text-muted-foreground hover:text-primary transition-colors" href="#">Métricas</a>
+<a class="px-6 py-3 text-muted-foreground hover:text-primary transition-colors" href="#">Chat</a>
+<a class="px-6 py-3 border-b-2 border-primary text-primary font-semibold" href="#">GitHub</a>
+</nav>
+<!-- END: Navigation Tabs -->
+</header>
+<!-- END: Breadcrumb and Header -->
+<!-- BEGIN: GitHub Content -->
+<div class="space-y-8">
+<!-- BEGIN: Info Cards Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Card 1: Repo Info -->
+<div class="bg-card-dark p-6 rounded-xl border border-border-dark shadow-sm flex items-start gap-4">
+<div class="bg-white/5 p-3 rounded-lg text-text-foreground">
+<svg class="w-8 h-8" fill="currentColor" viewbox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg>
+</div>
+<div class="flex-1">
+<h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Repositorio vinculado</h3>
+<p class="text-lg font-bold text-text-foreground mb-1">synchrocode-org / redesign-website</p>
+<div class="flex items-center gap-3 text-sm mb-3">
+<span class="flex items-center gap-1 text-muted-foreground">
+<span class="material-symbols-outlined text-[16px]">account_tree</span> main
+              </span>
+<a class="text-primary hover:underline font-medium" href="#">github.com/synchrocode-org/redesign-website</a>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-green-900/30 text-green-400 border border-green-800/50">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Conectado
+              </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-white/5 text-muted-foreground border border-border-dark">
+                Webhook activo
+              </span>
+</div>
+</div>
+</div>
+<!-- Card 2: Activity Stats -->
+<div class="bg-card-dark p-6 rounded-xl border border-border-dark shadow-sm flex items-start gap-4">
+<div class="bg-primary/10 p-3 rounded-lg text-primary">
+<span class="material-symbols-outlined text-[32px]">bar_chart</span>
+</div>
+<div class="flex-1">
+<h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3">Resumen de actividad</h3>
+<div class="grid grid-cols-3 gap-4">
+<div>
+<p class="text-2xl font-bold text-primary">14</p>
+<p class="text-xs text-muted-foreground">Commits vinculados</p>
+</div>
+<div>
+<p class="text-2xl font-bold text-primary">3</p>
+<p class="text-xs text-muted-foreground">Pull Requests</p>
+</div>
+<div>
+<p class="text-2xl font-bold text-primary">8</p>
+<p class="text-xs text-muted-foreground">Tareas con trazabilidad</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: Info Cards Row -->
+<!-- BEGIN: Commits Table -->
+<section class="mt-[28px]">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-text-foreground">Commits vinculados a tareas</h3>
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-card-dark border border-border-dark rounded-lg text-sm text-text-foreground focus:ring-1 focus:ring-primary focus:border-primary outline-none" placeholder="Buscar commit o tarea..." type="text"/>
+</div>
+</div>
+<div class="bg-card-dark rounded-xl border border-border-dark overflow-hidden shadow-sm">
+<table class="w-full text-left">
+<thead class="bg-border-dark border-b border-border-dark">
+<tr>
+<th class="px-6 py-4 text-xs font-semibold text-text-foreground uppercase tracking-wider">Tarea</th>
+<th class="px-6 py-4 text-xs font-semibold text-text-foreground uppercase tracking-wider">Commit</th>
+<th class="px-6 py-4 text-xs font-semibold text-text-foreground uppercase tracking-wider">Autor</th>
+<th class="px-6 py-4 text-xs font-semibold text-text-foreground uppercase tracking-wider">Fecha</th>
+<th class="px-6 py-4 text-xs font-semibold text-text-foreground uppercase tracking-wider">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-dark">
+<!-- Row 1 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-muted-foreground font-mono text-xs">#42</span>
+<span class="text-sm font-medium text-text-foreground">Rediseño de navbar</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-mono text-xs bg-white/10 px-2 py-1 rounded text-primary">a7f2d31</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Autor" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHmUJivFs0nuawReQAQFuR0ACesMVQxJp71nJVUrpwp-lYuUOhDdvgCz_evD6qTam4eC5VqDpCg0e-x1BqOv8QlqJr09RtcS3F9aeq6op2VCwPXs-PB8xc6Xz2xA3c0BdG3m-QOFHCc-H89QBEnt3m-gru42ExbhY3Rjk9NRYIA31YORl8rytJ0kKTF5Now5gVBPptMjTnYHo1FMLfgjjIuuCPBZenv8IYwvUGi5k7XG6eNIb2W2_i1Pe2vnOEXaOIIad-bHs7r6Y"/>
+<span class="text-sm text-muted-foreground">Carlos Ruiz</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-muted-foreground">Hace 2 horas</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-900/30 text-green-400 border border-green-800/50">Mergeado</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-muted-foreground font-mono text-xs">#38</span>
+<span class="text-sm font-medium text-text-foreground">Integración de iconos</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-mono text-xs bg-white/10 px-2 py-1 rounded text-primary">c8e1a90</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Autor" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRd8mOnAgVGhbTw5xOS85fbaAMPOrYwIHvRCnLwvs6m0UcVMZW09Y8O2Re0o803sjVngwDtruQnT2govhaVgFM7qL5zkCW-8AogqLRHD8zjNTrAHd3SVCjhlmzPtyhyhhh4WnqEh_QREPNcTNSsxMCjwElOpDkcckbkYLUWSKW0dc89rYDC53rZqwNRkLEnSfMScCCNzkgfrI8R_6cBJ0n5kNNz0VIFFLcnHwnfMurqAkOK-r8P8Q6U_gpRBgFwK0_XlAxMRJqezI"/>
+<span class="text-sm text-muted-foreground">Ana Belén</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-muted-foreground">Hace 5 horas</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-900/30 text-yellow-400 border border-yellow-800/50">En revisión</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-muted-foreground font-mono text-xs">#51</span>
+<span class="text-sm font-medium text-text-foreground">Animaciones de transición</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-mono text-xs bg-white/10 px-2 py-1 rounded text-primary">f9b0d21</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Autor" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFuPmkDFbYbnTOZiKbiUR3ci-x-ne80korEnW9a0xX3lqNSkdXzivHEfvI_jjWdS_LR6p7IUXm5dvPBIdqYLZZBc99_fASzk0K3WbmT-lzzSvkL5ir-t_RjUdKwqOrYrQD99quYbjZ2YesXgNyYguC7Tla90AVUfNIzXScNE2GtGGDsJntmbSdp5pC4xokfeyGFQTRniU3j5_jb_q89e8NiGcMfJeDuSC_WT1Bwgqf6LuEgP7laHjlsR0UxfNrNtPaJhtBpnuBAy8"/>
+<span class="text-sm text-muted-foreground">Marcos G.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-muted-foreground">Ayer, 18:45</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-900/30 text-green-400 border border-green-800/50">Mergeado</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-muted-foreground font-mono text-xs">#29</span>
+<span class="text-sm font-medium text-text-foreground">Corrección de estilos mobile</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-mono text-xs bg-white/10 px-2 py-1 rounded text-primary">b3c2e5a</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Autor" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-Ud6eFPzfUa2P1qTAj3VY0832311PixEw9BBk0Owavb5zgRUpW45TOYU4okXpZFE_WLmNNCvQi0mxc4aelG5K0csSD57PZTC57sdqpikJgUANH7FOP00d6wehyyhkXjPf2WzO7s488yQZIBo9oq-qJQ9eObSafuFzP4AkNKDEeNVTg7Q0pHLxcyyBLweH9RQSdTcuR2P5yIh-OsCNhCXOLFpsMbTvtRNNgbauEayVV5-oJJELsPq4MP_5n44cHoCuTBx_AIL_FdA"/>
+<span class="text-sm text-muted-foreground">Carlos Ruiz</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-muted-foreground">Hace 2 días</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-muted-foreground border border-border-dark">Cerrado</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- END: Commits Table -->
+<!-- BEGIN: Pull Requests -->
+<section class="mt-[28px]">
+<h3 class="text-lg font-bold text-text-foreground mb-4">Pull Requests</h3>
+<div class="bg-card-dark rounded-xl border border-border-dark shadow-sm divide-y divide-border-dark">
+<!-- PR 1 -->
+<div class="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-purple-400">merge</span>
+<div>
+<p class="text-sm font-semibold text-text-foreground">#12 feat: nueva navegación</p>
+<p class="text-xs text-muted-foreground">Abierto por <span class="font-medium text-text-foreground">cruiz</span> · Actualizado hace 4 horas</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-900/30 text-purple-400 border border-purple-800/50">Mergeado</span>
+</div>
+<!-- PR 2 -->
+<div class="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-blue-400">drafts</span>
+<div>
+<p class="text-sm font-semibold text-text-foreground">#15 fix: correcciones responsive</p>
+<p class="text-xs text-muted-foreground">Abierto por <span class="font-medium text-text-foreground">anabelen</span> · Hace 1 día</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-900/30 text-green-400 border border-green-800/50">Abierto</span>
+</div>
+<!-- PR 3 -->
+<div class="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-muted-foreground">cancel_presentation</span>
+<div>
+<p class="text-sm font-semibold text-text-foreground">#9 refactor: limpieza de estilos legacy</p>
+<p class="text-xs text-muted-foreground">Abierto por <span class="font-medium text-text-foreground">mgarcia</span> · Hace 3 días</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-muted-foreground border border-border-dark">Cerrado</span>
+</div>
+</div>
+</section>
+<!-- END: Pull Requests -->
+</div>
+<!-- END: GitHub Content -->
+</main>
+<!-- END: Main Content -->
+</body></html>

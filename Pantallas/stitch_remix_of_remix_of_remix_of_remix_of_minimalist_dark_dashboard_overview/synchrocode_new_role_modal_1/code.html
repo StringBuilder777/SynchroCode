@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SynchroCode - Nuevo Rol</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2e77b8",
+                        "primary-dark": "#1a5a8a",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#13191f",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e252b",
+                        "border-light": "#e2e8f0",
+                        "border-dark": "#2d3748",
+                        "text-main": "#0f172a",
+                        "text-muted": "#64748b",
+                        "text-dark-main": "#f1f5f9",
+                        "text-dark-muted": "#94a3b8",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.375rem", 
+                        "md": "0.375rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem"
+                    },
+                    boxShadow: {
+                        'modal': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom checkbox style to match Shadcn UI feel */
+        .custom-checkbox {
+            appearance: none;
+            background-color: transparent;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.15em;
+            height: 1.15em;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.25rem;
+            display: grid;
+            place-content: center;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .dark .custom-checkbox {
+            border-color: #475569;
+        }
+
+        .custom-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em white;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+
+        .custom-checkbox:checked {
+            background-color: #2e77b8;
+            border-color: #2e77b8;
+        }
+
+        .custom-checkbox:checked::before {
+            transform: scale(1);
+        }
+        
+        .custom-checkbox:focus-visible {
+            outline: 2px solid #2e77b8;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex items-center justify-center p-4">
+<!-- Modal Overlay Backdrop -->
+<div aria-hidden="true" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"></div>
+<!-- Modal Container -->
+<div class="relative z-50 w-full max-w-[700px] bg-surface-light dark:bg-surface-dark rounded-xl shadow-modal border border-border-light dark:border-border-dark flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+<!-- Modal Header -->
+<div class="flex items-center justify-between px-6 py-5 border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark sticky top-0 z-10">
+<div class="flex flex-col gap-1">
+<h2 class="text-xl font-semibold text-text-main dark:text-text-dark-main tracking-tight">Nuevo Rol</h2>
+<p class="text-sm text-text-muted dark:text-text-dark-muted">Crea un nuevo rol y define sus permisos de acceso.</p>
+</div>
+<button class="text-text-muted hover:text-text-main dark:text-text-dark-muted dark:hover:text-text-dark-main transition-colors p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/50">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<!-- Modal Content (Scrollable) -->
+<div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+<!-- Form Fields -->
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-sm font-medium leading-none text-text-main dark:text-text-dark-main peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="roleName">
+                        Nombre del rol
+                    </label>
+<input class="flex h-10 w-full rounded-md border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark px-3 py-2 text-sm text-text-main dark:text-text-dark-main placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all" id="roleName" placeholder="Ej: Tester, Líder Técnico" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-medium leading-none text-text-main dark:text-text-dark-main peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="roleDesc">
+                        Descripción
+                    </label>
+<textarea class="flex min-h-[80px] w-full rounded-md border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark px-3 py-2 text-sm text-text-main dark:text-text-dark-main placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all resize-none" id="roleDesc" placeholder="Describe las responsabilidades del rol..."></textarea>
+</div>
+</div>
+<!-- Permissions Matrix -->
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-medium text-text-main dark:text-text-dark-main">Matriz de Permisos</h3>
+<div class="flex items-center gap-2">
+<span class="text-xs text-text-muted dark:text-text-dark-muted">Seleccionar todo</span>
+<input class="custom-checkbox" type="checkbox"/>
+</div>
+</div>
+<div class="rounded-md border border-border-light dark:border-border-dark overflow-hidden">
+<table class="w-full text-sm text-left">
+<thead class="bg-background-light dark:bg-background-dark border-b border-border-light dark:border-border-dark">
+<tr>
+<th class="h-10 px-4 text-left align-middle font-medium text-text-muted dark:text-text-dark-muted w-[40%]">Permiso</th>
+<th class="h-10 px-4 text-center align-middle font-medium text-text-muted dark:text-text-dark-muted w-[15%]">Leer</th>
+<th class="h-10 px-4 text-center align-middle font-medium text-text-muted dark:text-text-dark-muted w-[15%]">Crear</th>
+<th class="h-10 px-4 text-center align-middle font-medium text-text-muted dark:text-text-dark-muted w-[15%]">Editar</th>
+<th class="h-10 px-4 text-center align-middle font-medium text-text-muted dark:text-text-dark-muted w-[15%]">Eliminar</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-light dark:divide-border-dark bg-surface-light dark:bg-surface-dark">
+<!-- Row: Proyectos -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="p-4 align-middle font-medium text-text-main dark:text-text-dark-main flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-text-muted">folder_open</span>
+                                    Proyectos
+                                </td>
+<td class="p-4 align-middle text-center"><input checked="" class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+</tr>
+<!-- Row: Tareas -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="p-4 align-middle font-medium text-text-main dark:text-text-dark-main flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-text-muted">check_circle</span>
+                                    Tareas
+                                </td>
+<td class="p-4 align-middle text-center"><input checked="" class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input checked="" class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input checked="" class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+</tr>
+<!-- Row: Usuarios -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="p-4 align-middle font-medium text-text-main dark:text-text-dark-main flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-text-muted">group</span>
+                                    Usuarios
+                                </td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+</tr>
+<!-- Row: Roles -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="p-4 align-middle font-medium text-text-main dark:text-text-dark-main flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-text-muted">admin_panel_settings</span>
+                                    Roles
+                                </td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+</tr>
+<!-- Row: Reportes -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="p-4 align-middle font-medium text-text-main dark:text-text-dark-main flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-text-muted">analytics</span>
+                                    Reportes
+                                </td>
+<td class="p-4 align-middle text-center"><input checked="" class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+</tr>
+<!-- Row: GitHub -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="p-4 align-middle font-medium text-text-main dark:text-text-dark-main flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-text-muted">code</span>
+                                    GitHub
+                                </td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+</tr>
+<!-- Row: Chat -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="p-4 align-middle font-medium text-text-main dark:text-text-dark-main flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-text-muted">chat_bubble</span>
+                                    Chat
+                                </td>
+<td class="p-4 align-middle text-center"><input checked="" class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input checked="" class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input checked="" class="custom-checkbox mx-auto" type="checkbox"/></td>
+<td class="p-4 align-middle text-center"><input class="custom-checkbox mx-auto" type="checkbox"/></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="flex items-center justify-end gap-3 px-6 py-4 bg-background-light dark:bg-background-dark border-t border-border-light dark:border-border-dark sticky bottom-0 z-10">
+<button class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-50 disabled:pointer-events-none border border-border-light bg-surface-light hover:bg-slate-100 hover:text-text-main dark:border-border-dark dark:bg-surface-dark dark:hover:bg-slate-800 dark:text-text-dark-main h-10 px-4 py-2">
+                Cancelar
+            </button>
+<button class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary disabled:opacity-50 disabled:pointer-events-none bg-primary text-white hover:bg-primary-dark h-10 px-8 py-2 shadow-sm">
+                Guardar
+            </button>
+</div>
+</div>
+</body></html>

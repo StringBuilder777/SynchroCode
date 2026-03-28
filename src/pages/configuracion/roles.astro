@@ -1,0 +1,8 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import { RolesPage } from "@/components/roles/RolesPage";
+---
+
+<AppLayout title="Gestión de Roles" currentPath="/configuracion/roles">
+  <RolesPage client:load />
+</AppLayout>

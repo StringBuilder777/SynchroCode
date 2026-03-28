@@ -1,0 +1,8 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import { GitHubAuthLoading } from "@/components/auth/GitHubAuthLoading";
+---
+
+<AuthLayout title="Autenticando con GitHub">
+  <GitHubAuthLoading client:load />
+</AuthLayout>

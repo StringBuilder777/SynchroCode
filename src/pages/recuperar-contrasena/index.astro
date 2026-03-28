@@ -1,0 +1,10 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import { PasswordRecoveryForm } from "@/components/auth/PasswordRecoveryForm";
+import { ThemeToggle } from "@/components/auth/ThemeToggle";
+---
+
+<AuthLayout title="Recuperar contraseña">
+  <ThemeToggle client:load />
+  <PasswordRecoveryForm client:load />
+</AuthLayout>

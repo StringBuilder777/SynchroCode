@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SynchroCode User Activation</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2E75B6", /* Updated to match user request blue */
+                        "background-light": "#F5F5F5", /* Updated to match user request light gray */
+                        "background-dark": "#19131f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.375rem", /* rounded-md equivalent */
+                        "md": "0.375rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<div class="relative flex min-h-screen w-full flex-col items-center justify-center p-4">
+<!-- Activation Card -->
+<div class="w-full max-w-[420px] bg-white dark:bg-[#251e2b] rounded-md shadow-[0_2px_8px_rgba(0,0,0,0.05)] border border-slate-200 dark:border-slate-800 p-8 flex flex-col gap-6">
+<!-- Header Section -->
+<div class="flex flex-col gap-2 text-center sm:text-left">
+<h1 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Activa tu cuenta</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                    Hola Alejandro. Crea tu contraseña para comenzar.
+                </p>
+</div>
+<!-- Form Fields -->
+<div class="flex flex-col gap-4">
+<!-- Email Field (Read Only) -->
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-medium" for="email">Correo electrónico</label>
+<div class="relative">
+<input class="form-input flex w-full rounded-md border border-slate-200 bg-slate-50 dark:bg-slate-800/50 dark:border-slate-700 px-3 py-2 text-sm text-slate-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary disabled:opacity-75 disabled:cursor-not-allowed" id="email" readonly="" type="email" value="alejandro@synchrocode.com"/>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-slate-400 text-[20px]">lock</span>
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-medium" for="password">Nueva contraseña</label>
+<div class="relative">
+<input class="form-input flex w-full rounded-md border border-slate-200 bg-white dark:bg-slate-900 dark:border-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors" id="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Confirm Password Field -->
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-medium" for="confirm-password">Confirmar contraseña</label>
+<div class="relative">
+<input class="form-input flex w-full rounded-md border border-slate-200 bg-white dark:bg-slate-900 dark:border-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors" id="confirm-password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Password Strength -->
+<div class="flex flex-col gap-2 pt-1">
+<div class="flex justify-between items-center">
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300">Fortaleza de contraseña</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Media</span>
+</div>
+<!-- Shadcn-like Progress Bar -->
+<div class="relative h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+<div class="h-full w-[60%] flex-1 bg-primary transition-all" style="transform: translateX(0%);"></div>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-white hover:bg-primary/90 h-10 px-4 py-2 w-full mt-2 shadow-sm">
+                Activar cuenta
+            </button>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2E75B6",
+                        "background-light": "#F5F5F5",
+                        "background-dark": "#221610",
+                        "destructive": "#C0392B",
+                        "success": "#27AE60",
+                        "warning": "#F39C12",
+                        "secondary-text": "#444444",
+                        "border-custom": "#CCCCCC"
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display" style="background-color: #F5F5F5;">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar -->
+<aside class="w-64 bg-white border-r border-slate-200 flex flex-col h-screen fixed left-0 top-0 overflow-y-auto z-50" style="border-color: #CCCCCC;">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary/10 rounded-lg p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-2xl">sync_alt</span>
+</div>
+<div>
+<h1 class="text-slate-900 text-lg font-bold leading-tight">SynchroCode</h1>
+<p class="text-slate-500 text-xs font-medium" style="color: #444444;">Gestión</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#" style="color: #444444;">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#" style="color: #444444;">
+<span class="material-symbols-outlined text-[20px]">view_kanban</span>
+<span class="text-sm font-medium">Proyectos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#" style="color: #444444;">
+<span class="material-symbols-outlined text-[20px]">check_box</span>
+<span class="text-sm font-medium">Tareas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#" style="color: #444444;">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">Equipo</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#" style="color: #444444;">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm font-medium">Configuración</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-slate-100">
+<div class="flex items-center gap-3 mb-4">
+<img alt="User Avatar" class="w-9 h-9 rounded-full object-cover border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE0LhXLczBVgo7_e-gnONeFRgCmdU0Qs44hFXHl4evFhM4-Q6OptwCBqwUgFmHE3jOCSfSZfKahGVYGNC0QuojIbR1zcyI0Ve4_TAqrMWpXvql-IWuNH2Cgrm1OTPd22-NJrddyiMx-snEI9u9bJK5tvdbr87D2vW4jnI6iNV9JFDb4mzAyvdYBdUb9dM9qpWwnt3dUWuGa9qzNKD99oQZscVL0jCkAmQSWDjZs-u9poP71zMOZLcevF3R-g8DOX6pUsJcH9m3guM"/>
+<div class="overflow-hidden">
+<p class="text-sm font-medium text-slate-900 truncate">Admin User</p>
+<p class="text-xs text-slate-500 truncate" style="color: #444444;">admin@synchro.com</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-9 px-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-red-600 text-sm font-medium transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:text-red-600 transition-colors">logout</span>
+<span>Cerrar Sesión</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-hidden relative">
+<!-- Header -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between px-8" style="border-color: #CCCCCC; background-color: rgba(255, 255, 255, 0.8);">
+<div class="flex items-center gap-4 flex-1">
+<div class="max-w-md w-full relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-primary/20" placeholder="Buscar proyectos, tareas..." style="background-color: #FFFFFF; border: 1px solid #CCCCCC;" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 relative" style="color: #444444;">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-white dark:border-slate-900"></span>
+</button>
+<button class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200" style="color: #444444;">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="flex-1 overflow-y-auto p-8 space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Panel de Control</h2>
+<p class="text-slate-500" style="color: #444444;">Bienvenido de nuevo, Alex. Aquí tienes un resumen de hoy.</p>
+</div>
+<button class="text-white px-4 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Nueva Tarea
+                    </button>
+</div>
+<!-- Notification Dropdown Simulator (Always visible for demonstration as per prompt) -->
+<div class="absolute right-8 top-20 w-[420px] bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden flex flex-col" style="border-color: #CCCCCC; background-color: #FFFFFF;">
+<div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between" style="border-color: #CCCCCC;">
+<h3 class="font-bold text-lg">Notificaciones</h3>
+<button class="text-xs text-primary font-semibold hover:underline">Marcar todas como leídas</button>
+</div>
+<div class="overflow-y-auto max-h-[500px]">
+<!-- Unread Notification -->
+<div class="p-4 flex gap-4 hover:bg-primary/10 transition-colors cursor-pointer border-l-4 border-primary" style="background-color: rgba(46, 117, 182, 0.05); border-left-color: #2E75B6;">
+<div class="h-10 w-10 shrink-0 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">assignment</span>
+</div>
+<div class="flex-1 space-y-1">
+<div class="flex justify-between items-start">
+<p class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">Nueva tarea asignada: Portal de clientes v2</p>
+<span class="w-2 h-2 rounded-full bg-primary shrink-0 mt-1"></span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400" style="color: #444444;">Se te ha asignado como responsable del sprint de diseño UX.</p>
+<p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Hace 5 minutos</p>
+</div>
+</div>
+<!-- Role Update -->
+<div class="p-4 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer border-l-4 border-transparent">
+<div class="h-10 w-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400" style="color: #444444;">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div class="flex-1 space-y-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white leading-tight">Rol actualizado a Administrador</p>
+<p class="text-xs text-slate-600 dark:text-slate-400" style="color: #444444;">Ahora tienes permisos para gestionar configuraciones de equipo.</p>
+<p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Hace 2 horas</p>
+</div>
+</div>
+<!-- Team Notification -->
+<div class="p-4 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer border-l-4 border-transparent">
+<div class="h-10 w-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400" style="color: #444444;">
+<span class="material-symbols-outlined">chat_bubble</span>
+</div>
+<div class="flex-1 space-y-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white leading-tight">Nuevo comentario en 'Integración API'</p>
+<p class="text-xs text-slate-600 dark:text-slate-400" style="color: #444444;">Lucía: "Podemos revisar los endpoints mañana?"</p>
+<p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Hace 4 horas</p>
+</div>
+</div>
+<!-- Project Alert -->
+<div class="p-4 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer border-l-4 border-transparent">
+<div class="h-10 w-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400" style="color: #444444;">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div class="flex-1 space-y-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white leading-tight">Vencimiento próximo: Landing Page</p>
+<p class="text-xs text-slate-600 dark:text-slate-400" style="color: #444444;">El plazo para el despliegue finaliza en 24 horas.</p>
+<p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Ayer a las 18:00</p>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-center" style="border-color: #CCCCCC;">
+<button class="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors uppercase tracking-widest" style="color: #444444;">Ver todas las notificaciones</button>
+</div>
+</div>
+<!-- Grid Layout for Dashboard Cards (Background) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pointer-events-none opacity-50">
+<div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm" style="border-color: #CCCCCC; background-color: #FFFFFF;">
+<p class="text-xs font-bold text-slate-500 uppercase tracking-wider" style="color: #444444;">Tareas Activas</p>
+<p class="text-3xl font-bold mt-2">12</p>
+<div class="mt-4 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3"></div>
+</div>
+</div>
+<div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm" style="border-color: #CCCCCC; background-color: #FFFFFF;">
+<p class="text-xs font-bold text-slate-500 uppercase tracking-wider" style="color: #444444;">Progreso Semanal</p>
+<p class="text-3xl font-bold mt-2">78%</p>
+<div class="mt-4 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-green-500 w-[78%]"></div>
+</div>
+</div>
+<div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm" style="border-color: #CCCCCC; background-color: #FFFFFF;">
+<p class="text-xs font-bold text-slate-500 uppercase tracking-wider" style="color: #444444;">Miembros Online</p>
+<p class="text-3xl font-bold mt-2">5</p>
+<div class="mt-4 flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+<img alt="Member" data-alt="Avatar de miembro del equipo 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDL7XmCq1Go_CtfHWqdGvUcWdtbKkIWRfD-l3b7jQYmpzLq29xdLBRr3ugn9xYyCImGFJcPG32i1pbxkiai7WrktZxW5jqHHSWM0Mc1QDF_D7ecGwjYzAfmiCrPmr_M7YBd7GURC6MwMMMxK8A7S-qdGW4gwzv6atyhqW8O0gbT-O6vIItP6mcDAPwKw6pL9jRMTHuzHv-tyt62XZdtLmsq6GwlnI1jJ_3077QeqJDyOLeY_SCahWfWTlo1TTgZVLQuC8aNnmsGG_M"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+<img alt="Member" data-alt="Avatar de miembro del equipo 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFozIZDfGPxyRSOCHYERYnXn0XaG-jgMojXSDuqSssjhq0guIUtwz_V9xhbE4S7A_FGvsiS_0tcgYNIk9DgSYH_U2oR5Ch-W9yNYcYhIQk7ibqB0Qq1SjvrVAcRnUPouFTQaUyH0xqktCbxgmy1VwOYwTPEoRVyJrrSCWLQr78SujxiMqtUEQogSeGlB8FXC9dve1dP2YmxMm4nsaFPLT54rMLS53JTAcL6vDdRldSxAgFeY4AutR3jt7LttKKsnOnwaAeixjOGyE"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+<img alt="Member" data-alt="Avatar de miembro del equipo 3" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDymZfC9QZq0bykghi_Tf8jkQT6uMRMscoCjOW7PWdJD52wPo3d69Y8lL_sSchsxRDDL_aai8huBcjY4XwY9C-C7ww0hUC1It6jX3D_m1coWeDuyy4xsFKdeiWWFsRHui1F0qml0j9PIoe4eEQ7_qF8wEunqCa6SLdfq-hjayklujoHgfztFQdpFapM0dIRHrN0-NOnhDRYa35Ss_YfAyhTwByzHguD7Tr4jzPvV7-sUqAKg9rMvmd7RduxV9hVLDzmncUPMs419l0"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-300 flex items-center justify-center text-[10px] font-bold">+2</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pointer-events-none opacity-50">
+<div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 h-64 shadow-sm" style="border-color: #CCCCCC; background-color: #FFFFFF;">
+<h4 class="font-bold mb-4">Actividad Reciente</h4>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="flex-1 border-b border-slate-50 pb-2">
+<p class="text-sm font-medium">Diseño del dashboard completado</p>
+<p class="text-xs text-slate-400">Ayer, 14:20</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-slate-300"></div>
+<div class="flex-1 border-b border-slate-50 pb-2">
+<p class="text-sm font-medium">Reunión de planificación iniciada</p>
+<p class="text-xs text-slate-400">Hoy, 09:00</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 h-64 shadow-sm" style="border-color: #CCCCCC; background-color: #FFFFFF;">
+<h4 class="font-bold mb-4">Próximos Hitos</h4>
+<div class="flex items-center justify-center h-40 text-slate-300">
+<span class="material-symbols-outlined text-4xl">calendar_month</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

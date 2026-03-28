@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SynchroCode - Subir Evidencia</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2E75B6",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="p-2 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl">sync_alt</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">SynchroCode</h1>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">folder</span>
+<span class="font-medium">Proyectos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">task_alt</span>
+<span class="font-medium">Tareas</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-medium">Equipo</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium">Configuración</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
+<div class="flex items-center gap-3 px-2">
+<div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img class="h-full w-full object-cover" data-alt="User avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6fr_o4HPWL5qW99yWCLy5f5Q6033BheDrWp4zdkHEs36rbDSQPx-gNFFPJrEoytdTKJbGoxed_9yNvrU7mNldyYMLxhUemgxbXFCunT5meOgCbqnoObkeaZk9PbC9ss2Tg08KqnLwUEiA65LY4LrMeNcjiSJ0XUNteK3RaxQgw-zA0e2350n6sp2EG791xkC0RBIkT4ujFgR3a0UyAVb_gOl9aA8dma44QzrkwE7wnwvqy_SZMWk4kr0U0S4jZ9Jw8-XPzJ6fmVE"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold truncate">Alex Rivera</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate" style="color: #444444;">Product Owner</p>
+</div>
+</div>
+<button class="flex w-full items-center gap-3 px-3 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-medium">Cerrar Sesión</span>
+</button>
+</div>
+</aside>
+<!-- Main Content (Kanban Background Blur) -->
+<main class="flex-1 overflow-auto relative bg-slate-50 dark:bg-slate-900/50">
+<!-- Header -->
+<header class="flex items-center justify-between px-8 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark/80 backdrop-blur-sm sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<h2 class="text-lg font-semibold">Tablero Kanban</h2>
+<div class="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
+<p class="text-sm text-slate-500">Proyecto: Sistema de Pagos</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-primary text-white rounded-lg font-medium text-sm" style="background-color: #2E75B6;">Nuevo Ticket</button>
+</div>
+</header>
+<!-- Kanban Board (Placeholder) -->
+<div class="p-8 grid grid-cols-4 gap-6 opacity-40 grayscale-[0.5] blur-[2px]">
+<div class="space-y-4">
+<h3 class="font-semibold text-sm flex items-center justify-between uppercase tracking-wider text-slate-500">To Do <span class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs italic">3</span></h3>
+<div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 h-32"></div>
+<div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 h-32"></div>
+</div>
+<div class="space-y-4">
+<h3 class="font-semibold text-sm flex items-center justify-between uppercase tracking-wider text-slate-500">In Progress <span class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs italic">2</span></h3>
+<div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 h-32 border-l-4 border-l-primary"></div>
+</div>
+<div class="space-y-4">
+<h3 class="font-semibold text-sm flex items-center justify-between uppercase tracking-wider text-slate-500">Review <span class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs italic">1</span></h3>
+<div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 h-32"></div>
+</div>
+<div class="space-y-4">
+<h3 class="font-semibold text-sm flex items-center justify-between uppercase tracking-wider text-slate-500">Done <span class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs italic">8</span></h3>
+<div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 h-32"></div>
+</div>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="background-color: rgba(245, 245, 245, 0.8);">
+<!-- Modal Content -->
+<div class="bg-white dark:bg-slate-900 w-full max-w-xl rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm" style="background-color: #FFFFFF; border-color: #CCCCCC;">
+<!-- Modal Header -->
+<div class="px-6 py-6 border-b border-slate-100 dark:border-slate-800" style="border-color: #CCCCCC;">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight">Subir Evidencia</h3>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400" style="color: #444444;">
+                            Adjunta capturas, diagramas o logs como evidencia de la tarea. Máximo 50 MB por archivo.
+                        </p>
+</div>
+<!-- Modal Body -->
+<div class="px-6 py-8 space-y-6">
+<!-- Dropzone -->
+<div class="group relative border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-primary dark:hover:border-primary rounded-xl p-10 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-800/50 transition-all cursor-pointer" style="border-color: #CCCCCC; background-color: #FFFFFF;">
+<div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">cloud_upload</span>
+</div>
+<div class="text-center">
+<p class="text-base font-semibold text-slate-900 dark:text-slate-100">Haz clic para seleccionar o arrastra archivos aquí</p>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Soporta PNG, JPG, PDF y TXT</p>
+</div>
+</div>
+<!-- Selected Files List -->
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900" style="background-color: #FFFFFF; border-color: #CCCCCC;">
+<div class="flex items-center gap-3 min-w-0">
+<div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-blue-600">
+<span class="material-symbols-outlined">image</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">error_log_dashboard.png</p>
+<p class="text-xs text-slate-500 dark:text-slate-400" style="color: #444444;">1.2 MB</p>
+</div>
+</div>
+<button class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl" style="color: #C0392B;">delete</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900" style="background-color: #FFFFFF; border-color: #CCCCCC;">
+<div class="flex items-center gap-3 min-w-0">
+<div class="p-2 bg-orange-50 dark:bg-orange-900/20 rounded text-orange-600">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">network_trace_logs.txt</p>
+<p class="text-xs text-slate-500 dark:text-slate-400" style="color: #444444;">450 KB</p>
+</div>
+</div>
+<button class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl" style="color: #C0392B;">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-6 py-6 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3" style="background-color: #FFFFFF; border-top-color: #CCCCCC;">
+<button class="px-5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" style="border-color: #CCCCCC; color: #444444;">
+                            Cancelar
+                        </button>
+<button class="px-5 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all" style="background-color: #2E75B6;">
+                            Subir archivos
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

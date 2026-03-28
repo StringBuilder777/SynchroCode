@@ -1,0 +1,10 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { ThemeToggle } from "@/components/auth/ThemeToggle";
+---
+
+<AuthLayout title="Iniciar sesión">
+  <ThemeToggle client:load />
+  <LoginForm client:load />
+</AuthLayout>
