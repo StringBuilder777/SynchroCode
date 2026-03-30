@@ -1,46 +1,110 @@
-# Astro Starter Kit: Basics
+# SynchroCode
 
-```sh
-npm create astro@latest -- --template basics
+Aplicación web de gestión de proyectos y equipos, construida con Astro 5 + React 19 + Tailwind CSS v4 + Shadcn/ui.
+
+## Stack tecnológico
+
+- **Framework**: Astro 5 (file-based routing)
+- **UI interactiva**: React 19 via `@astrojs/react`
+- **Estilos**: Tailwind CSS v4 con espacio de color OKLCH
+- **Componentes**: Shadcn/ui (estilo New York, base neutral) + Radix UI + Lucide icons
+- **Autenticación**: Supabase (JWT)
+- **Backend**: Quarkus en `http://localhost:8080`
+- **Lenguaje**: TypeScript (modo estricto)
+
+## Requisitos previos
+
+- Node.js 18+
+- Backend Quarkus corriendo en `localhost:8080`
+- Cuenta y proyecto en Supabase
+
+## Configuración
+
+Crea un archivo `.env` en la raíz del proyecto:
+
+```env
+PUBLIC_SUPABASE_URL=<tu-supabase-url>
+PUBLIC_SUPABASE_ANON_KEY=<tu-supabase-anon-key>
+PUBLIC_API_URL=http://localhost:8080
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Comandos
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+```bash
+npm install             # Instalar dependencias
+npm run dev             # Dev server en localhost:4321
+npm run build           # Build de producción en ./dist/
+npm run preview         # Preview del build localmente
+npx shadcn add <comp>   # Agregar componente de Shadcn/ui
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Estructura del proyecto
 
-## 🧞 Commands
+```
+src/
+├── pages/              # Rutas (cada archivo = una ruta)
+│   ├── index.astro
+│   ├── login.astro
+│   ├── dashboard.astro
+│   ├── perfil.astro
+│   ├── setup.astro
+│   ├── tareas.astro
+│   ├── activar-cuenta.astro
+│   ├── auth/
+│   ├── proyectos/
+│   ├── usuarios/
+│   ├── configuracion/
+│   └── recuperar-contrasena/
+├── components/         # Componentes reutilizables
+│   ├── ui/             # Componentes Shadcn/ui
+│   ├── auth/
+│   ├── dashboard/
+│   ├── layout/
+│   ├── proyectos/
+│   ├── roles/
+│   ├── tareas/
+│   └── usuarios/
+├── lib/
+│   ├── api.ts          # Cliente HTTP centralizado (maneja JWT automáticamente)
+│   ├── projects.ts     # Servicio de proyectos
+│   └── utils.ts        # Helper cn() para clases Tailwind
+├── layouts/            # Wrappers HTML
+└── styles/
+    └── global.css      # Variables de tema (light/dark)
+Pantallas/              # Mockups de pantallas (HTML + PNG) de referencia
+Contexto/               # Documentos de requerimientos (.docx)
+```
 
-All commands are run from the root of the project, from a terminal:
+## Arquitectura
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+### Integración con el backend
 
-## 👀 Want to learn more?
+El cliente HTTP en `src/lib/api.ts` adjunta automáticamente el JWT de Supabase en cada petición como `Authorization: Bearer <token>`. Para agregar un nuevo módulo del backend, crear un archivo de servicio en `src/lib/` siguiendo el patrón de `projects.ts`.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+CORS requerido en `application.properties` de Quarkus:
+
+```properties
+quarkus.http.cors=true
+quarkus.http.cors.origins=http://localhost:4321
+quarkus.http.cors.methods=GET,PUT,POST,DELETE,OPTIONS
+quarkus.http.cors.headers=accept, authorization, content-type, x-requested-with
+```
+
+### Modo oscuro
+
+Soportado via clase `.dark` en el elemento raíz. Los temas se definen en `src/styles/global.css` con paletas separadas para light/dark.
+
+### React en Astro
+
+Los componentes React interactivos requieren directivas de hidratación de Astro:
+
+```astro
+<MiComponente client:load />
+<MiComponente client:visible />
+```
+
+Los componentes estáticos no necesitan directiva.
+
+### Path alias
+
+`@/*` apunta a `./src/*`.
