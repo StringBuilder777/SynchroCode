@@ -3,8 +3,8 @@ export interface User {
   name: string;
   email: string;
   role: string;
-  status: "activo" | "inactivo";
-  activeTasks: number;
+  createdAt: string;
+  lastSignInAt: string | null;
 }
 
 export function getInitials(name: string): string {

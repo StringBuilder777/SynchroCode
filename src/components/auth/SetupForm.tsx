@@ -7,12 +7,14 @@ import { PasswordStrengthBar } from "./PasswordStrengthBar";
 import { ThemeToggle } from "./ThemeToggle";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export function SetupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [orgName, setOrgName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,21 +33,68 @@ export function SetupForm() {
       return;
     }
 
+    if (!orgName.trim()) {
+      setError("Ingresa el nombre de la organización.");
+      return;
+    }
+
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name, role: "admin" },
-      },
-    });
+    try {
+      // 1. Sign up
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name, role: "Administrador" },
+        },
+      });
 
-    if (error) {
-      setError(error.message);
+      if (signUpError) {
+        setError(signUpError.message);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Login to get JWT
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (loginError) {
+        setError(loginError.message);
+        setLoading(false);
+        return;
+      }
+
+      // 3. Create org in backend
+      const org = await api.post<{ id: string }>("/organizations", { name: orgName.trim() });
+
+      // 4. Save organizationId in user_metadata
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { organizationId: org.id },
+      });
+
+      if (updateError) {
+        setError(updateError.message);
+        setLoading(false);
+        return;
+      }
+
+      // 5. Refresh session to get JWT with organizationId
+      const { error: refreshError } = await supabase.auth.refreshSession();
+
+      if (refreshError) {
+        setError(refreshError.message);
+        setLoading(false);
+        return;
+      }
+
+      window.location.href = "/proyectos";
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Ocurrió un error inesperado.");
       setLoading(false);
-    } else {
-      window.location.href = "/login";
     }
   }
 
@@ -60,10 +109,10 @@ export function SetupForm() {
             </span>
           </div>
           <CardTitle className="text-2xl font-bold">
-            Crear cuenta de administrador
+            Crear cuenta
           </CardTitle>
           <CardDescription>
-            Esta cuenta tendrá acceso completo al sistema.
+            Registra tu cuenta para acceder al sistema.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -135,6 +184,18 @@ export function SetupForm() {
                 placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="orgName">Nombre de la organización</Label>
+              <Input
+                id="orgName"
+                type="text"
+                placeholder="Ej: Mi Empresa S.A."
+                value={orgName}
+                onChange={(e) => setOrgName(e.target.value)}
                 required
               />
             </div>

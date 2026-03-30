@@ -2,13 +2,9 @@
 import AuthLayout from "@/layouts/AuthLayout.astro";
 import { ActivateAccountForm } from "@/components/auth/ActivateAccountForm";
 import { ThemeToggle } from "@/components/auth/ThemeToggle";
-
-// TODO: Extraer email y nombre del token de activación (query param de Supabase)
-const email = Astro.url.searchParams.get("email") || "alejandro@synchrocode.com";
-const name = Astro.url.searchParams.get("name") || "Alejandro";
 ---
 
 <AuthLayout title="Activar cuenta">
   <ThemeToggle client:load />
-  <ActivateAccountForm email={email} name={name} client:load />
+  <ActivateAccountForm client:load />
 </AuthLayout>

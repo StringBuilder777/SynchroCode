@@ -1,22 +1,56 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { PasswordStrengthBar } from "./PasswordStrengthBar";
+import { supabase } from "@/lib/supabase";
 
-interface Props {
-  email: string;
-  name: string;
-}
-
-export function ActivateAccountForm({ email, name }: Props) {
+export function ActivateAccountForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [ready, setReady] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    let unsubscribed = false;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" || event === "PASSWORD_RECOVERY") {
+        setReady(true);
+        if (session?.user) {
+          setUserEmail(session.user.email ?? "");
+          const meta = session.user.user_metadata;
+          setUserName(meta?.name ?? meta?.raw_user_meta_data?.name ?? "");
+        }
+        if (!unsubscribed) {
+          unsubscribed = true;
+          subscription.unsubscribe();
+        }
+      }
+    });
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        setReady(true);
+        setUserEmail(data.session.user.email ?? "");
+        const meta = data.session.user.user_metadata;
+        setUserName(meta?.name ?? meta?.raw_user_meta_data?.name ?? "");
+      }
+    });
+
+    return () => {
+      if (!unsubscribed) {
+        unsubscribed = true;
+        subscription.unsubscribe();
+      }
+    };
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,15 +68,21 @@ export function ActivateAccountForm({ email, name }: Props) {
 
     setLoading(true);
 
-    // TODO: Integrar con Supabase Auth
-    try {
-      console.log("Activate:", { email, password });
-      // await supabase.auth.updateUser({ password })
-      window.location.href = "/login";
-    } catch {
-      setError("Error al activar la cuenta. Intenta de nuevo.");
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) {
+      setError(error.message);
       setLoading(false);
+    } else {
+      window.location.href = "/login?activated=ok";
     }
+  }
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-muted-foreground">
+        Verificando invitación...
+      </div>
+    );
   }
 
   return (
@@ -52,7 +92,7 @@ export function ActivateAccountForm({ email, name }: Props) {
           <div className="space-y-2">
             <h1 className="text-2xl font-bold">Activa tu cuenta</h1>
             <p className="text-sm text-muted-foreground">
-              Hola {name}. Crea tu contraseña para comenzar.
+              Hola {userName || "usuario"}. Crea tu contraseña para comenzar.
             </p>
           </div>
 
@@ -69,7 +109,7 @@ export function ActivateAccountForm({ email, name }: Props) {
                 <Input
                   id="email"
                   type="email"
-                  value={email}
+                  value={userEmail}
                   readOnly
                   disabled
                   className="pr-10"

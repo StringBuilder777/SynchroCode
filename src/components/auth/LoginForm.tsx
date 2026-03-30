@@ -27,9 +27,11 @@ export function LoginForm() {
     }
   }
 
-  function handleGitHubLogin() {
-    // TODO: Integrar OAuth GitHub con Supabase
-    window.location.href = "/auth/github";
+  async function handleGitHubLogin() {
+    await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: { redirectTo: `${window.location.origin}/auth/github` },
+    });
   }
 
   return (

@@ -3,21 +3,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/lib/supabase";
 
 export function PasswordRecoveryForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
-    // TODO: Integrar con Supabase Auth
     try {
-      console.log("Recovery:", email);
-      // await supabase.auth.resetPasswordForEmail(email)
-      window.location.href = `/recuperar-contrasena/confirmacion?email=${encodeURIComponent(email)}`;
-    } catch {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/recuperar-contrasena/nueva`,
+      });
+      if (error) throw error;
+      sessionStorage.setItem("recovery_email", email);
+      window.location.href = "/recuperar-contrasena/confirmacion";
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al enviar el correo. Intenta de nuevo.");
       setLoading(false);
     }
   }
@@ -43,6 +49,11 @@ export function PasswordRecoveryForm() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {error}
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Correo electrónico</Label>
                 <Input
