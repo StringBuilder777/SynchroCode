@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArchiveProjectDialog } from "./ArchiveProjectDialog";
@@ -9,10 +9,7 @@ import { GitHubTab } from "./GitHubTab";
 import { ChatTab } from "./ChatTab";
 import type { Project, TeamMember } from "./types";
 import { STATUS_CONFIG, getInitials, getAvatarColor } from "./types";
-
-const MOCK_PROJECT: Project = {
-  id: "1", name: "Redesign Website", description: "Rediseño completo de la plataforma web corporativa enfocado en mejorar la experiencia del usuario, optimizar el tiempo de carga y modernizar la identidad visual de la marca. Incluye la migración a tecnologías de frontend modernas y la integración con el nuevo backend de gestión.", status: "activo", startDate: "2024-01-10", endDate: "2024-03-20", totalTasks: 20, completedTasks: 12, members: [{ name: "Sarah Connor", role: "Project Manager" }, { name: "James Reese", role: "Frontend Dev" }, { name: "Marcus Chen", role: "Backend Dev" }, { name: "Elena Lopez", role: "UI/UX Designer" }], createdBy: "Admin User",
-};
+import { projectsService } from "@/lib/projects";
 
 const ACTIVITY = [
   { task: "Rediseño de navbar", status: "en_proceso", time: "hace 4 horas" },
@@ -30,11 +27,14 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
 const TABS = ["Resumen", "Tareas", "Equipo", "Métricas", "Chat", "GitHub"];
 
 interface Props {
+  projectId?: string;
   initialTab?: string;
 }
 
-export function ProjectDetailPage({ initialTab }: Props) {
-  const [project] = useState<Project>(MOCK_PROJECT);
+export function ProjectDetailPage({ projectId, initialTab }: Props) {
+  const [project, setProject] = useState<Project | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(() => {
     if (initialTab) {
       const match = TABS.find((t) => t.toLowerCase() === initialTab.toLowerCase());
@@ -45,9 +45,72 @@ export function ProjectDetailPage({ initialTab }: Props) {
   const [editOpen, setEditOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(
-    project.members.map((m, i) => ({ id: `m${i}`, name: m.name, email: `${m.name.toLowerCase().replace(" ", ".")}@synchro.com`, role: m.role }))
-  );
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+
+  // Resolve the project ID: from props or from the URL on the client
+  const resolvedId = projectId ?? (typeof window !== "undefined"
+    ? window.location.pathname.split("/").filter(Boolean).pop()
+    : undefined);
+
+  useEffect(() => {
+    if (!resolvedId) {
+      setError("ID de proyecto no encontrado.");
+      setLoading(false);
+      return;
+    }
+    projectsService.getById(resolvedId)
+      .then((p) => {
+        setProject(p);
+        setTeamMembers(
+          p.members.map((m, i) => ({
+            id: `m${i}`,
+            name: m.name,
+            email: "",
+            role: m.role,
+          }))
+        );
+      })
+      .catch((e: Error) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [resolvedId]);
+
+  async function handleEditSave(data: Pick<Project, "name" | "description" | "startDate" | "endDate">) {
+    if (!project) return;
+    try {
+      const updated = await projectsService.update(project.id, data);
+      setProject(updated);
+    } catch (e) {
+      console.error("Error al actualizar proyecto:", e);
+    }
+    setEditOpen(false);
+  }
+
+  async function handleArchive(id: string) {
+    try {
+      await projectsService.archive(id);
+      setProject((p) => p ? { ...p, status: "archivado" } : p);
+    } catch (e) {
+      console.error("Error al archivar proyecto:", e);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center text-muted-foreground">
+        Cargando proyecto...
+      </div>
+    );
+  }
+
+  if (error || !project) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          {error ?? "Proyecto no encontrado."}
+        </div>
+      </div>
+    );
+  }
 
   const cfg = STATUS_CONFIG[project.status];
   const pct = project.totalTasks > 0 ? Math.round((project.completedTasks / project.totalTasks) * 100) : 0;
@@ -100,8 +163,8 @@ export function ProjectDetailPage({ initialTab }: Props) {
           <div className="grid grid-cols-4 gap-4">
             {[
               { label: "TOTAL DE TAREAS", value: project.totalTasks, sub: `(${project.completedTasks} completadas)` },
-              { label: "EN PROCESO", value: project.totalTasks - project.completedTasks - 3, sub: "(3 pendientes)" },
-              { label: "MIEMBROS", value: teamMembers.length, sub: "(1 líder)" },
+              { label: "EN PROCESO", value: project.totalTasks - project.completedTasks, sub: "pendientes" },
+              { label: "MIEMBROS", value: teamMembers.length, sub: "" },
               { label: "DÍAS RESTANTES", value: daysLeft, sub: `Vence ${project.endDate}` },
             ].map((s) => (
               <div key={s.label} className="rounded-lg border p-4">
@@ -121,7 +184,7 @@ export function ProjectDetailPage({ initialTab }: Props) {
                   <div><p className="text-xs uppercase text-muted-foreground">Inicio</p><p className="font-medium">{project.startDate}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Entrega</p><p className="font-medium">{project.endDate}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Creado por</p><p className="font-medium">{project.createdBy}</p></div>
-                  <div><p className="text-xs uppercase text-muted-foreground">Estado</p><p className="font-medium text-primary">En progreso</p></div>
+                  <div><p className="text-xs uppercase text-muted-foreground">Estado</p><p className="font-medium text-primary">{cfg.label}</p></div>
                 </div>
                 <div className="rounded-lg bg-secondary p-4 space-y-2">
                   <div className="flex justify-between text-sm"><span className="font-medium">Progreso general</span><span className="text-primary font-semibold">{pct}%</span></div>
@@ -140,10 +203,10 @@ export function ProjectDetailPage({ initialTab }: Props) {
                   <div className="grid grid-cols-3 gap-4 text-xs uppercase tracking-wide text-muted-foreground pb-2 border-b">
                     <span>Tarea</span><span>Estado</span><span>Actualización</span>
                   </div>
-                  {ACTIVITY.map((a, i) => {
+                  {ACTIVITY.map((a) => {
                     const sb = STATUS_BADGE[a.status];
                     return (
-                      <div key={i} className="grid grid-cols-3 gap-4 py-3 border-b last:border-0 items-center text-sm">
+                      <div key={a.task} className="grid grid-cols-3 gap-4 py-3 border-b last:border-0 items-center text-sm">
                         <span>{a.task}</span>
                         <Badge variant="outline" className={`w-fit text-[10px] ${sb.cls}`}>{sb.label}</Badge>
                         <span className="text-muted-foreground">{a.time}</span>
@@ -185,21 +248,14 @@ export function ProjectDetailPage({ initialTab }: Props) {
                   </h3>
                   <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-500">CONECTADO</Badge>
                 </div>
-                <p className="text-sm text-muted-foreground font-mono">synchrocode-org / redesign-website</p>
+                <p className="text-sm text-muted-foreground font-mono">synchrocode-org / {project.name.toLowerCase().replace(/\s+/g, "-")}</p>
                 <div className="grid grid-cols-3 gap-2">
-                  {[{ n: "14", l: "COMMITS" }, { n: "3", l: "PRS" }, { n: "8", l: "VINCULADAS" }].map((s) => (
+                  {[{ n: "—", l: "COMMITS" }, { n: "—", l: "PRS" }, { n: "—", l: "VINCULADAS" }].map((s) => (
                     <div key={s.l} className="rounded-lg border p-2 text-center">
                       <div className="text-lg font-bold">{s.n}</div>
                       <div className="text-[10px] text-muted-foreground">{s.l}</div>
                     </div>
                   ))}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  <p>Último commit:</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <code className="rounded bg-secondary px-1.5 py-0.5 text-[11px]">a3f8c21</code>
-                    <span>feat: update navbar component</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -226,7 +282,7 @@ export function ProjectDetailPage({ initialTab }: Props) {
                   <div className={`flex size-8 items-center justify-center rounded-full text-xs font-medium ${getAvatarColor(m.name)}`}>{getInitials(m.name)}</div>
                   <span className="font-medium text-sm">{m.name}</span>
                 </div>
-                <span className="text-sm text-muted-foreground">{m.email}</span>
+                <span className="text-sm text-muted-foreground">{m.email || "—"}</span>
                 <Badge variant="outline" className="w-fit text-xs">{m.role}</Badge>
                 <div className="flex justify-end">
                   <Button variant="ghost" size="icon-sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setTeamMembers((prev) => prev.filter((x) => x.id !== m.id))}>
@@ -235,6 +291,9 @@ export function ProjectDetailPage({ initialTab }: Props) {
                 </div>
               </div>
             ))}
+            {teamMembers.length === 0 && (
+              <div className="px-6 py-8 text-center text-sm text-muted-foreground">Sin miembros asignados.</div>
+            )}
           </div>
         </div>
       )}
@@ -246,10 +305,10 @@ export function ProjectDetailPage({ initialTab }: Props) {
           </div>
           <div className="grid grid-cols-4 gap-4">
             {[
-              { label: "Tiempo Promedio Tarea", value: "4.2h", change: "↓12%", changeColor: "text-emerald-500", sub: "vs. mes anterior (4.8h)" },
-              { label: "Tareas Completadas", value: "128", change: "↑8%", changeColor: "text-emerald-500", sub: "vs. mes anterior (118)" },
-              { label: "Eficiencia Equipo", value: "94%", change: "—0%", changeColor: "text-muted-foreground", sub: "Estable vs. objetivo (90%)" },
-              { label: "Errores Reportados", value: "3", change: "↓50%", changeColor: "text-emerald-500", sub: "vs. mes anterior (6)" },
+              { label: "Tiempo Promedio Tarea", value: "—", change: "", changeColor: "text-muted-foreground", sub: "Sin datos aún" },
+              { label: "Tareas Completadas", value: String(project.completedTasks), change: "", changeColor: "text-muted-foreground", sub: `de ${project.totalTasks} totales` },
+              { label: "Eficiencia Equipo", value: "—", change: "", changeColor: "text-muted-foreground", sub: "Sin datos aún" },
+              { label: "Errores Reportados", value: "—", change: "", changeColor: "text-muted-foreground", sub: "Sin datos aún" },
             ].map((m) => (
               <div key={m.label} className="rounded-lg border p-4 space-y-1">
                 <p className="text-xs text-muted-foreground">{m.label}</p>
@@ -263,12 +322,11 @@ export function ProjectDetailPage({ initialTab }: Props) {
           </div>
 
           <div className="grid grid-cols-[1fr_340px] gap-6">
-            {/* Velocity chart placeholder */}
             <div className="rounded-lg border p-6 space-y-4">
               <div><h4 className="font-semibold">Velocidad del Equipo</h4><p className="text-sm text-muted-foreground">Tareas completadas por semana</p></div>
               <div className="flex items-end gap-3 h-48">
                 {[35, 45, 50, 60, 70, 85].map((h, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                  <div key={`bar-${i}`} className="flex-1 flex flex-col items-center gap-2">
                     <div className="w-full rounded-t bg-primary" style={{ height: `${h}%` }} />
                     <span className="text-[10px] text-muted-foreground">{i < 5 ? `Sem ${i + 1}` : "Actual"}</span>
                   </div>
@@ -276,7 +334,6 @@ export function ProjectDetailPage({ initialTab }: Props) {
               </div>
             </div>
 
-            {/* Priorities */}
             <div className="rounded-lg border p-6 space-y-4">
               <div><h4 className="font-semibold">Prioridades</h4><p className="text-sm text-muted-foreground">Distribución de tareas activas</p></div>
               <div className="flex justify-center py-4">
@@ -302,17 +359,13 @@ export function ProjectDetailPage({ initialTab }: Props) {
         </div>
       )}
 
-      {activeTab === "Tareas" && (
-        <KanbanBoard />
-      )}
-
+      {activeTab === "Tareas" && <KanbanBoard />}
       {activeTab === "GitHub" && <GitHubTab />}
-
       {activeTab === "Chat" && <ChatTab />}
 
       {/* Dialogs */}
-      <ProjectFormDialog open={editOpen} onClose={() => setEditOpen(false)} onSave={() => setEditOpen(false)} project={project} />
-      <ArchiveProjectDialog open={archiveOpen} onClose={() => setArchiveOpen(false)} onConfirm={() => {}} project={project} />
+      <ProjectFormDialog open={editOpen} onClose={() => setEditOpen(false)} onSave={handleEditSave} project={project} />
+      <ArchiveProjectDialog open={archiveOpen} onClose={() => setArchiveOpen(false)} onConfirm={handleArchive} project={project} />
       <AddMemberDialog open={addMemberOpen} onClose={() => setAddMemberOpen(false)} onAdd={(m) => setTeamMembers((prev) => [...prev, m])} existingIds={teamMembers.map((m) => m.id)} />
     </div>
   );

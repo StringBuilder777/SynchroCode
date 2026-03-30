@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationsDropdown } from "./NotificationsDropdown";
+import { usersService } from "@/lib/users";
+import { supabase } from "@/lib/supabase";
+import { getInitials } from "@/components/usuarios/types";
+import type { User } from "@/components/usuarios/types";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: "grid" },
@@ -34,12 +38,15 @@ interface SidebarProps {
 
 export function Sidebar({ currentPath }: SidebarProps) {
   const [isDark, setIsDark] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");
     const dark = stored ? stored === "dark" : true;
     setIsDark(dark);
     document.documentElement.classList.toggle("dark", dark);
+
+    usersService.getMe().then(setUser).catch(() => {});
   }, []);
 
   function toggleTheme() {
@@ -53,8 +60,9 @@ export function Sidebar({ currentPath }: SidebarProps) {
     <aside className="flex h-screen w-60 flex-col border-r bg-card">
       {/* Logo */}
       <div className="flex items-center gap-3 border-b px-5 py-4">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+        <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+          <img src="/Logo_white.svg" alt="SynchroCode" className="size-6 dark:block hidden" />
+          <img src="/Logo.svg" alt="SynchroCode" className="size-6 dark:hidden" />
         </div>
         <div className="flex-1">
           <div className="font-semibold leading-tight">SynchroCode</div>
@@ -89,21 +97,24 @@ export function Sidebar({ currentPath }: SidebarProps) {
       <div className="border-t px-4 py-4 space-y-3">
         <a href="/perfil" className="flex items-center gap-3 rounded-lg px-1 py-1 -mx-1 hover:bg-accent transition-colors">
           <div className="flex size-9 items-center justify-center rounded-full bg-secondary text-sm font-medium">
-            AU
+            {user ? getInitials(user.name) : "··"}
           </div>
           <div className="min-w-0">
-            <div className="truncate text-sm font-medium">Admin User</div>
-            <div className="truncate text-xs text-muted-foreground">admin@synchro.com</div>
+            <div className="truncate text-sm font-medium">{user?.name || "Cargando..."}</div>
+            <div className="truncate text-xs text-muted-foreground">{user?.email || ""}</div>
           </div>
         </a>
         <div className="flex items-center justify-between">
-          <a
-            href="/login"
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.href = "/login";
+            }}
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
             Cerrar Sesión
-          </a>
+          </button>
           <button
             onClick={toggleTheme}
             className="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"

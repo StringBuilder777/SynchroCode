@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { GithubIcon } from "./GithubIcon";
 import { ThemeToggle } from "./ThemeToggle";
+import { supabase } from "@/lib/supabase";
 
 const steps = [
   { label: "Conexión con GitHub establecida", key: "connect" },
@@ -11,14 +12,36 @@ const steps = [
 
 export function GitHubAuthLoading() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [authError, setAuthError] = useState("");
 
   useEffect(() => {
-    // Simulación de progreso — en producción esto se reemplaza con el flujo OAuth real
-    const t1 = setTimeout(() => setCurrentStep(1), 1500);
-    const t2 = setTimeout(() => setCurrentStep(2), 3500);
+    // Supabase processes the OAuth tokens from the URL automatically on page load.
+    // We listen for the SIGNED_IN event and then redirect.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        setCurrentStep(1);
+        setTimeout(() => setCurrentStep(2), 800);
+        setTimeout(() => { window.location.href = "/proyectos"; }, 1600);
+        subscription.unsubscribe();
+      }
+    });
+
+    // Also check if session already exists (e.g. page reload after auth)
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        setCurrentStep(2);
+        setTimeout(() => { window.location.href = "/proyectos"; }, 500);
+      }
+    });
+
+    // Fallback: if no session after 10s, redirect to login
+    const timeout = setTimeout(() => {
+      setAuthError("No se pudo autenticar. Intenta de nuevo.");
+    }, 10000);
+
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
+      subscription.unsubscribe();
+      clearTimeout(timeout);
     };
   }, []);
 
@@ -29,8 +52,9 @@ export function GitHubAuthLoading() {
         <CardContent className="space-y-8 text-center">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+              <img src="/Logo_white.svg" alt="SynchroCode" className="size-7 hidden dark:block" />
+              <img src="/Logo.svg" alt="SynchroCode" className="size-7 dark:hidden" />
             </div>
             <span className="text-lg font-semibold">SynchroCode</span>
           </div>
@@ -85,6 +109,12 @@ export function GitHubAuthLoading() {
               </div>
             ))}
           </div>
+
+          {authError && (
+            <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {authError}
+            </div>
+          )}
 
           {/* Cancel */}
           <a

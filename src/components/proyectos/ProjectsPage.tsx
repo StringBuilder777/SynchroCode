@@ -1,18 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ProjectFormDialog } from "./ProjectFormDialog";
 import type { Project } from "./types";
 import { STATUS_CONFIG, getInitials, getAvatarColor } from "./types";
-
-const initialProjects: Project[] = [
-  { id: "1", name: "Redesign Website 2024", description: "Actualización completa de la identidad visual y experiencia de usuario del sitio web corporativo.", status: "activo", startDate: "2024-01-01", endDate: "2024-06-30", totalTasks: 20, completedTasks: 12, members: [{ name: "Sarah Connor", role: "PM" }, { name: "James Reese", role: "Dev" }, { name: "Marcus Chen", role: "Dev" }], createdBy: "Admin User" },
-  { id: "2", name: "Mobile App V2", description: "Desarrollo de nuevas funcionalidades para la aplicación móvil iOS y Android.", status: "en_revision", startDate: "2024-02-15", endDate: "2024-05-20", totalTasks: 48, completedTasks: 45, members: [{ name: "Ana López", role: "PM" }, { name: "Luis M.", role: "Dev" }], createdBy: "Admin User" },
-  { id: "3", name: "API Integration Hub", description: "Conexión de servicios de terceros para centralizar datos de clientes.", status: "activo", startDate: "2024-04-01", endDate: "2024-09-30", totalTasks: 30, completedTasks: 5, members: [{ name: "Carlos G.", role: "Dev" }, { name: "Elena L.", role: "Dev" }, { name: "Pedro S.", role: "QA" }], createdBy: "Admin User" },
-  { id: "4", name: "Marketing Q3 Campaign", description: "Preparación de assets digitales y landing pages para la campaña de marketing Q3.", status: "planificacion", startDate: "2024-07-01", endDate: "2024-08-31", totalTasks: 15, completedTasks: 0, members: [], createdBy: "Admin User" },
-  { id: "5", name: "Internal Dashboard", description: "Herramienta interna para métricas de rendimiento del equipo.", status: "activo", startDate: "2024-03-10", endDate: "2024-08-10", totalTasks: 40, completedTasks: 28, members: [{ name: "Sarah C.", role: "PM" }, { name: "James R.", role: "Dev" }, { name: "Marcus C.", role: "Dev" }], createdBy: "Admin User" },
-];
+import { projectsService } from "@/lib/projects";
 
 const TABS = [
   { key: "activos", label: "Activos" },
@@ -21,27 +14,42 @@ const TABS = [
 ];
 
 export function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState("activos");
   const [search, setSearch] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
+  useEffect(() => {
+    projectsService.getAll()
+      .then(setProjects)
+      .catch((e: Error) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
   const filtered = useMemo(() => {
     return projects.filter((p) => {
-      const matchTab = tab === "todos" || (tab === "activos" ? p.status !== "archivado" : p.status === "archivado");
+      const matchTab =
+        tab === "todos" ||
+        (tab === "activos" ? p.status !== "archivado" : p.status === "archivado");
       const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
       return matchTab && matchSearch;
     });
   }, [projects, tab, search]);
 
-  function handleSave(data: Pick<Project, "name" | "description" | "startDate" | "endDate">) {
-    if (editingProject) {
-      setProjects((prev) => prev.map((p) => (p.id === editingProject.id ? { ...p, ...data } : p)));
-    } else {
-      setProjects((prev) => [...prev, {
-        id: crypto.randomUUID(), status: "activo", totalTasks: 0, completedTasks: 0, members: [], createdBy: "Admin User", ...data,
-      }]);
+  async function handleSave(data: Pick<Project, "name" | "description" | "startDate" | "endDate">) {
+    try {
+      if (editingProject) {
+        const updated = await projectsService.update(editingProject.id, data);
+        setProjects((prev) => prev.map((p) => (p.id === editingProject.id ? updated : p)));
+      } else {
+        const created = await projectsService.create(data);
+        setProjects((prev) => [...prev, created]);
+      }
+    } catch (e) {
+      console.error("Error al guardar proyecto:", e);
     }
     setEditingProject(null);
   }
@@ -56,8 +64,25 @@ export function ProjectsPage() {
     if (total === 0) return "bg-muted";
     const pct = completed / total;
     if (pct >= 0.9) return "bg-amber-500";
-    if (pct >= 0.5) return "bg-primary";
     return "bg-primary";
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center text-muted-foreground">
+        Cargando proyectos...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          Error al cargar proyectos: {error}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -155,13 +180,18 @@ export function ProjectsPage() {
         </button>
       </div>
 
-      {filtered.length === 0 && (
+      {filtered.length === 0 && !loading && (
         <div className="py-12 text-center text-muted-foreground">
           No hay proyectos disponibles.
         </div>
       )}
 
-      <ProjectFormDialog open={formOpen} onClose={() => { setFormOpen(false); setEditingProject(null); }} onSave={handleSave} project={editingProject} />
+      <ProjectFormDialog
+        open={formOpen}
+        onClose={() => { setFormOpen(false); setEditingProject(null); }}
+        onSave={handleSave}
+        project={editingProject}
+      />
     </div>
   );
 }

@@ -18,21 +18,22 @@ import {
 } from "@/components/ui/select";
 import type { User } from "./types";
 
-const ROLES = ["Administrador", "Gerente de Proyecto", "Desarrollador Senior", "Desarrollador Junior", "Invitado / Cliente"];
+const ROLES = ["Administrador", "Gerente de Proyecto", "Desarrollador Senior", "Desarrollador Junior", "Programador", "Invitado / Cliente"];
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSave: (data: Omit<User, "id" | "activeTasks">) => void;
+  onInvite: (data: { email: string; name: string; role: string }) => Promise<void>;
+  onUpdateRole: (userId: string, role: string) => Promise<void>;
   user?: User | null;
 }
 
-export function UserFormDialog({ open, onClose, onSave, user }: Props) {
+export function UserFormDialog({ open, onClose, onInvite, onUpdateRole, user }: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [status, setStatus] = useState<"activo" | "inactivo">("activo");
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const isEdit = !!user;
 
@@ -41,29 +42,39 @@ export function UserFormDialog({ open, onClose, onSave, user }: Props) {
       setName(user.name);
       setEmail(user.email);
       setRole(user.role);
-      setStatus(user.status);
     } else {
       setName("");
       setEmail("");
       setRole("");
-      setStatus("activo");
     }
     setError("");
   }, [user, open]);
 
-  function handleSave() {
+  async function handleSave() {
     if (!name.trim()) { setError("El nombre es obligatorio."); return; }
     if (!email.trim()) { setError("El correo es obligatorio."); return; }
     if (!role) { setError("Selecciona un rol."); return; }
-    onSave({ name: name.trim(), email: email.trim(), role, status });
-    onClose();
+
+    setSaving(true);
+    try {
+      if (isEdit) {
+        await onUpdateRole(user.id, role);
+      } else {
+        await onInvite({ email: email.trim(), name: name.trim(), role });
+      }
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al guardar.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-[460px]">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Editar Usuario" : "Nuevo Usuario"}</DialogTitle>
+          <DialogTitle>{isEdit ? "Editar Rol" : "Invitar Usuario"}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -80,6 +91,7 @@ export function UserFormDialog({ open, onClose, onSave, user }: Props) {
               placeholder="María García"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              disabled={isEdit}
             />
           </div>
 
@@ -91,6 +103,7 @@ export function UserFormDialog({ open, onClose, onSave, user }: Props) {
               placeholder="maria@empresa.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isEdit}
             />
           </div>
 
@@ -108,35 +121,20 @@ export function UserFormDialog({ open, onClose, onSave, user }: Props) {
             </Select>
           </div>
 
-          {isEdit && (
-            <div className="space-y-2">
-              <Label>Estado</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v as "activo" | "inactivo")}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="activo">Activo</SelectItem>
-                  <SelectItem value="inactivo">Inactivo</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
           {/* Info note */}
           <div className="flex items-start gap-2 rounded-lg bg-primary/10 p-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-primary"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
             <p className="text-sm text-muted-foreground">
               {isEdit
                 ? "Los cambios de rol se aplicarán en el próximo inicio de sesión del usuario."
-                : "El usuario recibirá un correo de activación."}
+                : "El usuario recibirá un correo de invitación con un link para establecer su contraseña."}
             </p>
           </div>
         </div>
 
         <DialogFooter className="flex-col gap-2 sm:flex-col">
-          <Button className="w-full" onClick={handleSave}>
-            {isEdit ? "Guardar cambios" : "Guardar"}
+          <Button className="w-full" onClick={handleSave} disabled={saving}>
+            {saving ? "Guardando..." : isEdit ? "Guardar cambios" : "Enviar invitación"}
           </Button>
           <Button variant="outline" className="w-full" onClick={onClose}>
             Cancelar

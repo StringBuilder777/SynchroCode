@@ -1,0 +1,8 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import { NewPasswordForm } from "@/components/auth/NewPasswordForm";
+---
+
+<AuthLayout title="Nueva contraseña">
+  <NewPasswordForm client:load />
+</AuthLayout>

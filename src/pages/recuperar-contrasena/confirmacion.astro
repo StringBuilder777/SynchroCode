@@ -1,10 +1,8 @@
 ---
 import AuthLayout from "@/layouts/AuthLayout.astro";
 import { PasswordRecoveryConfirmation } from "@/components/auth/PasswordRecoveryConfirmation";
-
-const email = Astro.url.searchParams.get("email") || "usuario@empresa.com";
 ---
 
 <AuthLayout title="Revisa tu correo">
-  <PasswordRecoveryConfirmation email={email} client:load />
+  <PasswordRecoveryConfirmation client:load />
 </AuthLayout>

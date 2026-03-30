@@ -1,0 +1,170 @@
+[     154ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     154ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     154ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     155ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     155ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     155ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     182ms] TypeError: Cannot read properties of null (reading 'useState')
+    at exports.useState (http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:959:35)
+    at ThemeToggle (http://localhost:4321/src/components/auth/ThemeToggle.tsx:22:27)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:3521:25)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:5152:19)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:5763:18)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:8568:18)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:8466:41)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:8450:11)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:8125:44)
+    at performWorkOnRootViaSchedulerTask (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:9129:7)
+[     158ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     158ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     159ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     159ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     159ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     159ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:391
+[     183ms] TypeError: Cannot read properties of null (reading 'useState')
+    at exports.useState (http://localhost:4321/node_modules/.vite/deps/chunk-PYBXEW2I.js?v=b5814655:959:35)
+    at LoginForm (http://localhost:4321/src/components/auth/LoginForm.tsx:27:29)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:3521:25)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:5152:19)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:5763:18)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:8568:18)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:8466:41)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:8450:11)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:8125:44)
+    at performWorkOnRootViaSchedulerTask (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=b5814655:9129:7)
+[   15026ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[   16028ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[  288858ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/src/components/auth/OnboardingForm.tsx?t=1774754975996:0
+[  288859ms] [ERROR] [vite] Failed to reload /src/components/auth/OnboardingForm.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:4321/@vite/client:1613
+[  289020ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/onboarding:0
+[  292373ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  <SetupForm>
+    <div className="flex min-h...">
+      <ThemeToggle>
+      <Card className="w-full max...">
+        <div data-slot="card" className="flex flex-...">
+          <CardHeader>
+          <CardContent>
+            <div data-slot="card-content" className="px-6">
+              <form onSubmit={function handleSubmit} className="space-y-4">
+                <div>
+                <div>
+                <div>
+                <PasswordStrengthBar>
+                <div>
++               <div className="space-y-3">
+-               <button
+-                 data-slot="button"
+-                 data-variant="default"
+-                 data-size="default"
+-                 className={"inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium w..."}
+-                 type="submit"
+-               >
+                ...
+
+    at throwOnHydrationMismatch (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=29ac765e:3921:13)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=29ac765e:8695:196)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=29ac765e:998:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=29ac765e:12562:98)
+    at workLoopConcurrentByScheduler (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=29ac765e:12558:11)
+    at renderRootConcurrent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=29ac765e:12540:71)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=29ac765e:11767:152)
+    at performWorkOnRootViaSchedulerTask (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=29ac765e:13506:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=29ac765e:37:50)
+[  755344ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://rqfrbpyptvtdjsodueqm.supabase.co/rest/v1/organization?select=id:0
+[  770740ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://rqfrbpyptvtdjsodueqm.supabase.co/rest/v1/organization?select=id:0
+[  858674ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://rqfrbpyptvtdjsodueqm.supabase.co/rest/v1/organization?select=id:0
+[  892163ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8080/projects/all:0
+[  933433ms] [ERROR] Failed to load resource: the server responded with a status of 422 () @ https://rqfrbpyptvtdjsodueqm.supabase.co/auth/v1/signup:0
+[ 1255707ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://rqfrbpyptvtdjsodueqm.supabase.co/rest/v1/organization?select=id:0
+[ 1346676ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://rqfrbpyptvtdjsodueqm.supabase.co/rest/v1/organization?select=id:0
+[ 2740953ms] [ERROR] Access to fetch at 'http://localhost:8080/organizations' from origin 'http://localhost:4322' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The 'Access-Control-Allow-Origin' header has a value 'http://localhost:4321' that is not equal to the supplied origin. Have the server send the header with a valid value. @ http://localhost:4322/setup:0
+[ 2740954ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/organizations:0
+[ 2955053ms] [ERROR] Failed to load resource: the server responded with a status of 422 () @ https://rqfrbpyptvtdjsodueqm.supabase.co/auth/v1/signup:0
+[ 2989373ms] [ERROR] Access to fetch at 'http://localhost:8080/organizations' from origin 'http://localhost:4322' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The 'Access-Control-Allow-Origin' header has a value 'http://localhost:4321' that is not equal to the supplied origin. Have the server send the header with a valid value. @ http://localhost:4322/setup:0
+[ 2989373ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/organizations:0
+[ 2995528ms] [ERROR] Failed to load resource: the server responded with a status of 422 () @ https://rqfrbpyptvtdjsodueqm.supabase.co/auth/v1/signup:0
+[ 3169395ms] [ERROR] Access to fetch at 'http://localhost:8080/projects/all' from origin 'http://localhost:4322' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The 'Access-Control-Allow-Origin' header has a value 'http://localhost:4321' that is not equal to the supplied origin. Have the server send the header with a valid value. @ http://localhost:4322/proyectos:0
+[ 3169395ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/projects/all:0
+[ 3185526ms] [ERROR] Access to fetch at 'http://localhost:8080/projects/all' from origin 'http://localhost:4322' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The 'Access-Control-Allow-Origin' header has a value 'http://localhost:4321' that is not equal to the supplied origin. Have the server send the header with a valid value. @ http://localhost:4322/proyectos:0
+[ 3185526ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/projects/all:0
+[ 3288856ms] [ERROR] Access to fetch at 'http://localhost:8080/organizations' from origin 'http://localhost:4322' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The 'Access-Control-Allow-Origin' header has a value 'http://localhost:4321' that is not equal to the supplied origin. Have the server send the header with a valid value. @ http://localhost:4322/setup:0
+[ 3288857ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/organizations:0
+[ 3296407ms] [ERROR] Failed to load resource: the server responded with a status of 422 () @ https://rqfrbpyptvtdjsodueqm.supabase.co/auth/v1/signup:0
+[ 3313115ms] [ERROR] WebSocket connection to 'ws://localhost:4322/' failed: Error during WebSocket handshake: net::ERR_CONNECTION_RESET @ http://localhost:4322/@vite/client:1766
+[ 3372076ms] [ERROR] Access to fetch at 'http://localhost:8080/projects/all' from origin 'http://localhost:4321' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:4321/proyectos:0
+[ 3372076ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/projects/all:0
+[ 3614308ms] [ERROR] Access to fetch at 'http://localhost:8080/projects/all' from origin 'http://localhost:4321' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:4321/proyectos:0
+[ 3614308ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/projects/all:0
+[ 3641878ms] [ERROR] Access to fetch at 'http://localhost:8080/projects/all' from origin 'http://localhost:4321' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:4321/proyectos:0
+[ 3641878ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/projects/all:0
+[ 3695363ms] [ERROR] Access to fetch at 'http://localhost:8080/projects/all' from origin 'http://localhost:4321' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:4321/proyectos:0
+[ 3695363ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/projects/all:0
+[ 4567830ms] [WARNING] Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. @ http://localhost:4321/node_modules/.vite/deps/radix-ui.js?v=ab53e292:3351
+[ 5452832ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 5453837ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 5454840ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 5455843ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 5456848ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 5457854ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 5458863ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 5459876ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
