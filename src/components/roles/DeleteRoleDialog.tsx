@@ -10,21 +10,41 @@ import type { Role } from "./types";
 interface Props {
   open: boolean;
   onClose: () => void;
-  onConfirm: (roleId: string) => void;
+  onConfirm: (roleId: string) => Promise<void>;
   role: Role | null;
 }
 
 export function DeleteRoleDialog({ open, onClose, onConfirm, role }: Props) {
   const [confirmation, setConfirmation] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setConfirmation("");
+    setError("");
+    setIsSubmitting(false);
   }, [open]);
 
   if (!role) return null;
 
-  const canDelete = role.userCount === 0;
   const isConfirmed = confirmation === role.name;
+
+  async function handleConfirm() {
+    setError("");
+    setIsSubmitting(true);
+    try {
+      await onConfirm(role!.id);
+      onClose();
+    } catch (err: any) {
+      if (err.message?.includes("409")) {
+        setError(`Este rol está asignado a usuario(s) activo(s). Reasígnalos antes de eliminar.`);
+      } else {
+        setError(err.message || "Error al eliminar el rol.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -51,61 +71,39 @@ export function DeleteRoleDialog({ open, onClose, onConfirm, role }: Props) {
               <div className="font-medium">{role.name}</div>
               <div className="text-sm text-muted-foreground">{role.description}</div>
             </div>
-            <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${
-              role.userCount === 0
-                ? "border-emerald-500/30 text-emerald-500"
-                : "border-destructive/30 text-destructive"
-            }`}>
-              {role.userCount} usuarios
-            </span>
           </div>
 
-          {/* Status message */}
-          {canDelete ? (
-            <div className="flex items-start gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-left">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-emerald-500"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-              <p className="text-sm text-emerald-500">
-                Este rol no tiene usuarios asignados. Puedes eliminarlo sin afectar a nadie.
-              </p>
-            </div>
-          ) : (
+          {error && (
             <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-left">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-destructive"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-              <p className="text-sm text-destructive">
-                Este rol está asignado a {role.userCount} usuario(s) activo(s). Reasígnalos antes de eliminar.
-              </p>
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 
           {/* Confirmation input */}
-          {canDelete && (
-            <div className="space-y-2 text-left">
-              <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Escribe {role.name} para confirmar
-              </label>
-              <Input
-                value={confirmation}
-                onChange={(e) => setConfirmation(e.target.value)}
-                placeholder={role.name}
-                className={isConfirmed ? "border-emerald-500 focus-visible:ring-emerald-500/50" : ""}
-              />
-            </div>
-          )}
+          <div className="space-y-2 text-left">
+            <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Escribe {role.name} para confirmar
+            </label>
+            <Input
+              value={confirmation}
+              onChange={(e) => setConfirmation(e.target.value)}
+              placeholder={role.name}
+              className={isConfirmed ? "border-emerald-500 focus-visible:ring-emerald-500/50" : ""}
+            />
+          </div>
 
           {/* Actions */}
           <div className="space-y-2">
             <Button
               variant="destructive"
               className="w-full"
-              disabled={!canDelete || !isConfirmed}
-              onClick={() => {
-                onConfirm(role.id);
-                onClose();
-              }}
+              disabled={!isConfirmed || isSubmitting}
+              onClick={handleConfirm}
             >
-              Eliminar rol
+              {isSubmitting ? "Eliminando..." : "Eliminar rol"}
             </Button>
-            <Button variant="outline" className="w-full" onClick={onClose}>
+            <Button variant="outline" className="w-full" onClick={onClose} disabled={isSubmitting}>
               Cancelar
             </Button>
           </div>

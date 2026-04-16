@@ -1,32 +1,77 @@
 export const MODULES = [
-  { key: "proyectos", label: "Proyectos", icon: "folder" },
-  { key: "tareas", label: "Tareas", icon: "check" },
-  { key: "usuarios", label: "Usuarios", icon: "users" },
-  { key: "roles", label: "Roles", icon: "shield" },
-  { key: "reportes", label: "Reportes", icon: "chart" },
-  { key: "github", label: "GitHub", icon: "code" },
-  { key: "chat", label: "Chat", icon: "message" },
+  { key: "projects_module", label: "Proyectos", icon: "folder" },
+  { key: "tasks", label: "Tareas", icon: "check" },
+  { key: "users_module", label: "Usuarios", icon: "users" },
+  { key: "roles_module", label: "Roles", icon: "shield" },
+  { key: "reports_module", label: "Reportes", icon: "chart" },
+  { key: "github_module", label: "GitHub", icon: "code" },
+  { key: "chat_module", label: "Chat", icon: "message" },
+  { key: "invoices_module", label: "Facturas", icon: "fileText" },
 ] as const;
 
-export const ACTIONS = ["leer", "crear", "editar", "eliminar"] as const;
+export const ACTIONS = ["read", "create", "update", "delete"] as const;
 
 export type ModuleKey = (typeof MODULES)[number]["key"];
 export type ActionKey = (typeof ACTIONS)[number];
 
+// UI representation
 export type PermissionMatrix = Record<ModuleKey, Record<ActionKey, boolean>>;
+
+// Backend representation
+export type BackendPermissions = Record<string, string[]>;
 
 export interface Role {
   id: string;
   name: string;
   description: string;
   permissions: PermissionMatrix;
-  userCount: number;
+  organizationId?: string | null;
+}
+
+export interface BackendRole {
+  id: string;
+  name: string;
+  description: string;
+  permissions: BackendPermissions;
+  organizationId?: string | null;
 }
 
 export function createEmptyPermissions(): PermissionMatrix {
   const matrix = {} as PermissionMatrix;
   for (const mod of MODULES) {
-    matrix[mod.key] = { leer: false, crear: false, editar: false, eliminar: false };
+    matrix[mod.key] = { read: false, create: false, update: false, delete: false };
+  }
+  return matrix;
+}
+
+export function transformToBackend(permissions: PermissionMatrix): BackendPermissions {
+  const result: BackendPermissions = {};
+  for (const [module, actions] of Object.entries(permissions)) {
+    const activeActions = (Object.entries(actions) as [ActionKey, boolean][])
+      .filter(([_, value]) => value)
+      .map(([key, _]) => key);
+    
+    if (activeActions.length > 0) {
+      result[module] = activeActions;
+    }
+  }
+  return result;
+}
+
+export function transformFromBackend(permissions: BackendPermissions): PermissionMatrix {
+  const matrix = createEmptyPermissions();
+  if (!permissions) return matrix;
+  
+  for (const [module, actions] of Object.entries(permissions)) {
+    const modKey = module as ModuleKey;
+    if (matrix[modKey]) {
+      for (const action of actions) {
+        const actKey = action as ActionKey;
+        if (matrix[modKey][actKey] !== undefined) {
+          matrix[modKey][actKey] = true;
+        }
+      }
+    }
   }
   return matrix;
 }
@@ -40,13 +85,13 @@ export function getPermissionSummary(permissions: PermissionMatrix): string[] {
 
   for (const mod of MODULES) {
     const actions = permissions[mod.key];
-    if (actions.leer && actions.crear && actions.editar && actions.eliminar) {
+    if (actions.read && actions.create && actions.update && actions.delete) {
       tags.push(mod.label);
-    } else if (actions.leer) {
+    } else if (actions.read) {
       tags.push("Leer");
-    } else if (actions.crear) {
+    } else if (actions.create) {
       tags.push("Crear");
-    } else if (actions.editar) {
+    } else if (actions.update) {
       tags.push("Editar");
     }
   }
