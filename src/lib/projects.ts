@@ -64,15 +64,32 @@ export const projectsService = {
   },
 
   update: async (id: string, payload: ProjectPayload): Promise<Project> => {
-    const data = await api.put<BackendProject>(`/projects?projectId=${id}`, payload);
+    const data = await api.put<BackendProject>(`/projects/${id}`, payload);
     return fromBackend(data);
   },
 
   archive: async (id: string): Promise<void> => {
-    await api.put<void>(`/projects/archive?projectId=${id}`);
+    await api.put<void>(`/projects/archive/${id}`);
+  },
+
+  unarchive: async (id: string): Promise<void> => {
+    await api.put<void>(`/projects/unarchive/${id}`);
   },
 
   delete: async (id: string): Promise<void> => {
-    await api.delete<void>(`/projects?projectId=${id}`);
+    await api.delete<void>(`/projects/${id}`);
+  },
+
+  // Team management
+  getMembers: async (projectId: string): Promise<any[]> => {
+    return api.get<any[]>(`/projects/${projectId}/members`);
+  },
+
+  addMember: async (projectId: string, userId: string): Promise<void> => {
+    await api.post<void>(`/projects/${projectId}/members/${userId}`, {});
+  },
+
+  removeMember: async (projectId: string, userId: string): Promise<void> => {
+    await api.delete<void>(`/projects/${projectId}/members/${userId}`);
   },
 };

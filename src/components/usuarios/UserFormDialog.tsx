@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { api } from "@/lib/api";
+import type { BackendRole } from "@/components/roles/types";
 import {
   Dialog,
   DialogContent,
@@ -18,8 +20,6 @@ import {
 } from "@/components/ui/select";
 import type { User } from "./types";
 
-const ROLES = ["Administrador", "Gerente de Proyecto", "Desarrollador Senior", "Desarrollador Junior", "Programador", "Invitado / Cliente"];
-
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -32,10 +32,23 @@ export function UserFormDialog({ open, onClose, onInvite, onUpdateRole, user }: 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [roles, setRoles] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
   const isEdit = !!user;
+
+  useEffect(() => {
+    async function fetchRoles() {
+      try {
+        const data = await api.get<BackendRole[]>("/roles");
+        setRoles(data.map(r => r.name));
+      } catch (err) {
+        console.error("Error fetching roles:", err);
+      }
+    }
+    fetchRoles();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -114,7 +127,7 @@ export function UserFormDialog({ open, onClose, onInvite, onUpdateRole, user }: 
                 <SelectValue placeholder="Selecciona un rol" />
               </SelectTrigger>
               <SelectContent>
-                {ROLES.map((r) => (
+                {roles.map((r) => (
                   <SelectItem key={r} value={r}>{r}</SelectItem>
                 ))}
               </SelectContent>

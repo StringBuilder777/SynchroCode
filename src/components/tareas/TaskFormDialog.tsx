@@ -7,16 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import type { Task, TaskPriority } from "./types";
 
-const MEMBERS = ["Alex Rivera", "Sarah Connor", "James Reese", "Marcus Chen", "Elena Lopez"];
-
 interface Props {
   open: boolean;
   onClose: () => void;
   onSave: (data: Pick<Task, "title" | "description" | "priority" | "assignee" | "dueDate">) => void;
   task?: Task | null;
+  projectMembers?: { id: string; name: string }[];
 }
 
-export function TaskFormDialog({ open, onClose, onSave, task }: Props) {
+export function TaskFormDialog({ open, onClose, onSave, task, projectMembers = [] }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<TaskPriority | "">("");
@@ -73,7 +72,7 @@ export function TaskFormDialog({ open, onClose, onSave, task }: Props) {
               <Select value={assignee} onValueChange={setAssignee}>
                 <SelectTrigger><SelectValue placeholder="Asignar a..." /></SelectTrigger>
                 <SelectContent>
-                  {MEMBERS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                  {projectMembers.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

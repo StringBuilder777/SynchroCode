@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
-import type { Task, TaskStatus } from "./types";
+import type { Task, TaskStatus, TaskPriority } from "./types";
 import { PRIORITY_CONFIG, STATUS_CONFIG } from "./types";
+import { tasksService } from "@/lib/tasks";
 
 interface Props {
   open: boolean;
@@ -12,36 +15,113 @@ interface Props {
   task: Task | null;
   onStatusChange: (id: string, status: TaskStatus) => void;
   onUploadEvidence: (id: string) => void;
+  onUpdateTask: (id: string, data: Partial<Task>) => Promise<void>;
+  onDeleteTask: (task: Task) => void;
+  userMap?: Record<string, string>;
 }
 
-export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUploadEvidence }: Props) {
-  if (!task) return null;
-  const pc = PRIORITY_CONFIG[task.priority];
+export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUploadEvidence, onUpdateTask, onDeleteTask, userMap = {} }: Props) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState<TaskPriority>("baja");
+  const [isSaving, setIsEditing] = useState(false);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-  const history = [
-    { text: <>Estado cambiado a <span className="text-primary">En Proceso</span></>, sub: "Hace 3 horas por Alex Rivera" },
-    { text: <>Se adjuntó <strong>dashboard_mockup.png</strong></>, sub: "Hace 5 horas por Marta S." },
-    { text: <>Tarea creada</>, sub: `${task.createdAt} por ${task.createdBy}` },
-  ];
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title);
+      setDescription(task.description);
+      setDueDate(task.dueDate);
+      setPriority(task.priority);
+    }
+  }, [task, open]);
+
+  if (!task) return null;
+  const pc = PRIORITY_CONFIG[task.priority] || { label: "BAJA", color: "bg-muted text-muted-foreground border-muted-foreground/30" };
+
+  async function handleDownload(evidenceId: string) {
+    setDownloadingId(evidenceId);
+    try {
+      const url = await tasksService.getEvidenceDownloadUrl(evidenceId);
+      window.open(url, "_blank");
+    } catch (error) {
+      console.error("Download error:", error);
+    } finally {
+      setDownloadingId(null);
+    }
+  }
+
+  function formatDate(d: string) {
+    if (!d) return "";
+    try {
+      const date = new Date(d);
+      return date.toLocaleDateString("es", { 
+        day: "2-digit", 
+        month: "short", 
+        year: "numeric",
+        hour: "2-digit", 
+        minute: "2-digit" 
+      });
+    } catch {
+      return d;
+    }
+  }
+
+  function getInitials(name: string) {
+    if (!name) return "??";
+    return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
+  }
+
+  const creatorName = userMap[task.createdBy] || task.createdBy;
+  const assigneeName = userMap[task.assignee] || task.assignee || "Sin asignar";
+
+  async function handleSave() {
+    setIsEditing(true);
+    try {
+      await onUpdateTask(task.id, { title, description, dueDate, priority });
+      onClose();
+    } catch (error) {
+      console.error("Error updating task:", error);
+    } finally {
+      setIsEditing(false);
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-[740px] max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between">
-          <div className="space-y-2">
+          <div className="space-y-4 flex-1 mr-4">
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className={pc.color}>{pc.label}</Badge>
-              <span className="text-sm text-muted-foreground flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                Vence: {task.dueDate}
-              </span>
+              <Select value={priority} onValueChange={(v) => setPriority(v as TaskPriority)}>
+                <SelectTrigger className={`h-7 w-fit border-0 px-2 py-0 text-[10px] uppercase font-bold ${PRIORITY_CONFIG[priority].color}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="alta">Alta</SelectItem>
+                  <SelectItem value="media">Media</SelectItem>
+                  <SelectItem value="baja">Baja</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input 
+                type="date" 
+                value={dueDate} 
+                onChange={(e) => setDueDate(e.target.value)}
+                className="h-7 w-fit text-xs border-0 bg-transparent text-muted-foreground"
+              />
             </div>
-            <h2 className="text-xl font-bold">{task.title}</h2>
+            <Input 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)}
+              className="text-xl font-bold border-0 p-0 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/50"
+              placeholder="Título de la tarea"
+            />
             <Badge variant="outline" className="text-xs border-primary/30 text-primary">SynchroCode Development</Badge>
           </div>
           <Select value={task.status} onValueChange={(v) => onStatusChange(task.id, v as TaskStatus)}>
-            <SelectTrigger className={`w-[150px] ${STATUS_CONFIG[task.status].color} border-0`}>
+            <SelectTrigger className={`w-[150px] ${STATUS_CONFIG[task.status]?.color || 'bg-muted'} border-0`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -60,7 +140,12 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
                 Descripción
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{task.description}</p>
+              <Textarea 
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="text-sm text-muted-foreground leading-relaxed min-h-[120px] resize-none border-0 p-0 focus-visible:ring-0"
+                placeholder="Añadir una descripción detallada..."
+              />
             </div>
 
             <div className="space-y-3">
@@ -70,15 +155,24 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
               </h3>
               {task.evidence.map((e, i) => (
                 <div key={i} className="flex items-center gap-3 rounded-lg border p-3">
-                  <div className={`flex size-9 items-center justify-center rounded-lg ${e.name.endsWith(".png") || e.name.endsWith(".jpg") ? "bg-blue-500/15 text-blue-500" : "bg-rose-500/15 text-rose-500"}`}>
+                  <div className={`flex size-9 items-center justify-center rounded-lg ${e.name.match(/\.(png|jpg|jpeg)$/i) ? "bg-blue-500/15 text-blue-500" : "bg-rose-500/15 text-rose-500"}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium truncate">{e.name}</div>
                     <div className="text-xs text-muted-foreground">{e.size}</div>
                   </div>
-                  <Button variant="ghost" size="icon-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                  <Button 
+                    variant="ghost" 
+                    size="icon-sm" 
+                    onClick={() => handleDownload(e.id)}
+                    disabled={downloadingId === e.id}
+                  >
+                    {downloadingId === e.id ? (
+                      <div className="size-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    )}
                   </Button>
                 </div>
               ))}
@@ -95,20 +189,11 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
               <div>
                 <p className="text-xs uppercase text-muted-foreground">Responsable</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="flex size-7 items-center justify-center rounded-full bg-amber-500/20 text-amber-500 text-[10px] font-medium">AR</div>
-                  <span className="font-medium">{task.assignee || "Sin asignar"}</span>
+                  <div className="flex size-7 items-center justify-center rounded-full bg-amber-500/20 text-amber-500 text-[10px] font-medium">
+                    {getInitials(assigneeName)}
+                  </div>
+                  <span className="font-medium">{assigneeName}</span>
                 </div>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-muted-foreground">Prioridad</p>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <span className={`size-2 rounded-full ${task.priority === "alta" ? "bg-rose-500" : task.priority === "media" ? "bg-amber-500" : "bg-muted-foreground"}`} />
-                  <span className={task.priority === "alta" ? "text-rose-500" : task.priority === "media" ? "text-amber-500" : ""}>{pc.label.charAt(0) + pc.label.slice(1).toLowerCase()}</span>
-                </div>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-muted-foreground">Fecha de entrega</p>
-                <p className="mt-1 font-medium">{task.dueDate}</p>
               </div>
               <div>
                 <p className="text-xs uppercase text-muted-foreground">Proyecto</p>
@@ -116,7 +201,8 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
               </div>
               <div>
                 <p className="text-xs uppercase text-muted-foreground">Creada por</p>
-                <p className="mt-1">{task.createdBy} · {task.createdAt}</p>
+                <p className="mt-1 text-xs truncate" title={creatorName}>{creatorName}</p>
+                <p className="text-[10px] text-muted-foreground">{formatDate(task.createdAt)}</p>
               </div>
             </div>
 
@@ -127,10 +213,13 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
                 Historial
               </h3>
               <div className="space-y-3 border-l-2 border-muted pl-4">
-                {history.map((h, i) => (
-                  <div key={i}>
+                {(task.history || []).map((h, i) => (
+                  <div key={i} className="relative">
+                    <div className="absolute -left-[21px] top-1.5 size-2 rounded-full bg-muted-foreground/30 border-2 border-background" />
                     <p className="text-sm">{h.text}</p>
-                    <p className="text-xs text-muted-foreground">{h.sub}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDate(h.date)} por {userMap[h.sub] || h.sub || "Sistema"}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -138,9 +227,17 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={onClose}>Guardar cambios</Button>
+        <DialogFooter className="flex items-center justify-between sm:justify-between border-t pt-4 mt-2">
+          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => onDeleteTask(task)}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            Eliminar tarea
+          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={onClose}>Cancelar</Button>
+            <Button size="sm" onClick={handleSave} disabled={isSaving}>
+              {isSaving ? "Guardando..." : "Guardar cambios"}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
