@@ -6,6 +6,7 @@ import { ProjectFormDialog } from "./ProjectFormDialog";
 import type { Project } from "./types";
 import { STATUS_CONFIG, getInitials, getAvatarColor } from "./types";
 import { projectsService } from "@/lib/projects";
+import { usersService } from "@/lib/users";
 
 const TABS = [
   { key: "activos", label: "Activos" },
@@ -15,6 +16,7 @@ const TABS = [
 
 export function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState("activos");
@@ -23,11 +25,24 @@ export function ProjectsPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   useEffect(() => {
-    projectsService.getAll()
-      .then(setProjects)
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false));
+    async function loadData() {
+      try {
+        const [projectsData, userData] = await Promise.all([
+          projectsService.getAll(),
+          usersService.getMe()
+        ]);
+        setProjects(projectsData);
+        setUserRole(userData.role);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
   }, []);
+
+  const isManagement = userRole === "Administrador" || userRole === "Gerente";
 
   const filtered = useMemo(() => {
     return projects.filter((p) => {
@@ -91,12 +106,18 @@ export function ProjectsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Proyectos</h1>
-          <p className="text-sm text-muted-foreground">Gestiona y monitorea el progreso de tus proyectos activos.</p>
+          <p className="text-sm text-muted-foreground">
+            {isManagement 
+              ? "Gestiona y monitorea el progreso de todos los proyectos activos." 
+              : "Visualiza el progreso de tu proyecto asignado."}
+          </p>
         </div>
-        <Button onClick={() => { setEditingProject(null); setFormOpen(true); }}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-          Nuevo Proyecto
-        </Button>
+        {isManagement && (
+          <Button onClick={() => { setEditingProject(null); setFormOpen(true); }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Nuevo Proyecto
+          </Button>
+        )}
       </div>
 
       {/* Tabs + Search */}
@@ -166,18 +187,20 @@ export function ProjectsPage() {
         })}
 
         {/* New project card */}
-        <button
-          onClick={() => { setEditingProject(null); setFormOpen(true); }}
-          className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors"
-        >
-          <div className="flex size-12 items-center justify-center rounded-full bg-secondary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-          </div>
-          <div className="text-center">
-            <div className="font-semibold">Nuevo Proyecto</div>
-            <div className="text-sm">Crea un nuevo espacio de trabajo y asigna equipo.</div>
-          </div>
-        </button>
+        {isManagement && (
+          <button
+            onClick={() => { setEditingProject(null); setFormOpen(true); }}
+            className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors"
+          >
+            <div className="flex size-12 items-center justify-center rounded-full bg-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold">Nuevo Proyecto</div>
+              <div className="text-sm">Crea un nuevo espacio de trabajo y asigna equipo.</div>
+            </div>
+          </button>
+        )}
       </div>
 
       {filtered.length === 0 && !loading && (

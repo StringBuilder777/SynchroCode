@@ -153,8 +153,12 @@ export function KanbanPage() {
         onClose={() => setUploadTaskId(null)}
         onUpload={(files) => {
           if (uploadTaskId) {
-            setTasks((prev) => prev.map((t) => t.id === uploadTaskId ? { ...t, evidence: [...t.evidence, ...files] } : t));
-            if (detailTask?.id === uploadTaskId) setDetailTask((prev) => prev ? { ...prev, evidence: [...prev.evidence, ...files] } : null);
+            const mappedFiles = files.map((f) => ({
+              name: f.name,
+              size: f.size > 1048576 ? `${(f.size / 1048576).toFixed(1)} MB` : `${(f.size / 1024).toFixed(0)} KB`,
+            }));
+            setTasks((prev) => prev.map((t) => t.id === uploadTaskId ? { ...t, evidence: [...t.evidence, ...mappedFiles] } : t));
+            if (detailTask?.id === uploadTaskId) setDetailTask((prev) => prev ? { ...prev, evidence: [...prev.evidence, ...mappedFiles] } : null);
           }
         }}
       />

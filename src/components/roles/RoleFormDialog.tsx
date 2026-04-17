@@ -25,7 +25,7 @@ import {
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSave: (role: Omit<Role, "id" | "userCount">) => void;
+  onSave: (role: Omit<Role, "id">) => Promise<void>;
   role?: Role | null;
 }
 
@@ -37,13 +37,14 @@ const moduleIcons: Record<string, React.ReactNode> = {
   chart: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>,
   code: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
   message: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>,
+  fileText: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>,
 };
 
 const actionLabels: Record<ActionKey, string> = {
-  leer: "Leer",
-  crear: "Crear",
-  editar: "Editar",
-  eliminar: "Eliminar",
+  read: "Leer",
+  create: "Crear",
+  update: "Editar",
+  delete: "Eliminar",
 };
 
 export function RoleFormDialog({ open, onClose, onSave, role }: Props) {
@@ -90,13 +91,21 @@ export function RoleFormDialog({ open, onClose, onSave, role }: Props) {
     });
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!name.trim()) {
       setError("El nombre del rol es obligatorio.");
       return;
     }
-    onSave({ name: name.trim(), description: description.trim(), permissions });
-    onClose();
+    try {
+      await onSave({ name: name.trim(), description: description.trim(), permissions });
+      onClose();
+    } catch (err: any) {
+      if (err.message?.includes("409")) {
+        setError("Ya existe un rol con ese nombre en su organización o es un rol reservado del sistema.");
+      } else {
+        setError(err.message || "Error al guardar el rol.");
+      }
+    }
   }
 
   const allChecked = Object.values(permissions).every((actions) =>

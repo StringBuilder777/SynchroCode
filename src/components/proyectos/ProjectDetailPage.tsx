@@ -10,6 +10,7 @@ import { ChatTab } from "./ChatTab";
 import type { Project, TeamMember } from "./types";
 import { STATUS_CONFIG, getInitials, getAvatarColor } from "./types";
 import { projectsService } from "@/lib/projects";
+import { usersService } from "@/lib/users";
 
 const ACTIVITY = [
   { task: "Rediseño de navbar", status: "en_proceso", time: "hace 4 horas" },
@@ -33,6 +34,7 @@ interface Props {
 
 export function ProjectDetailPage({ projectId, initialTab }: Props) {
   const [project, setProject] = useState<Project | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(() => {
@@ -46,6 +48,7 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Resolve the project ID: from props or from the URL on the client
   const resolvedId = projectId ?? (typeof window !== "undefined"
@@ -58,21 +61,43 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
       setLoading(false);
       return;
     }
-    projectsService.getById(resolvedId)
-      .then((p) => {
+    
+    async function loadData() {
+      try {
+        const [p, userData, membersData] = await Promise.all([
+          projectsService.getById(resolvedId!),
+          usersService.getMe(),
+          projectsService.getMembers(resolvedId!)
+        ]);
+        
         setProject(p);
+        setUserRole(userData.role);
+        
+        // Fetch all users to get names/emails for the member list
+        const allOrgUsers = await usersService.getAll();
+        
         setTeamMembers(
-          p.members.map((m, i) => ({
-            id: `m${i}`,
-            name: m.name,
-            email: "",
-            role: m.role,
-          }))
+          membersData.map((m: any) => {
+            const u = allOrgUsers.find(user => user.id === m.userId);
+            return {
+              id: m.userId,
+              name: u?.name || "Usuario Desconocido",
+              email: u?.email || "",
+              role: u?.role || "Miembro", // In a real app, role might come from project_team table
+            };
+          })
         );
-      })
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false));
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadData();
   }, [resolvedId]);
+
+  const isManagement = userRole === "Administrador" || userRole === "Gerente";
 
   async function handleEditSave(data: Pick<Project, "name" | "description" | "startDate" | "endDate">) {
     if (!project) return;
@@ -85,12 +110,42 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
     setEditOpen(false);
   }
 
-  async function handleArchive(id: string) {
+  async function handleToggleArchive() {
+    if (!project) return;
     try {
-      await projectsService.archive(id);
-      setProject((p) => p ? { ...p, status: "archivado" } : p);
+      if (project.status === "archivado") {
+        await projectsService.unarchive(project.id);
+        setProject((p) => p ? { ...p, status: "activo" } : p);
+      } else {
+        await projectsService.archive(project.id);
+        setProject((p) => p ? { ...p, status: "archivado" } : p);
+      }
     } catch (e) {
-      console.error("Error al archivar proyecto:", e);
+      console.error("Error al cambiar estado de archivo del proyecto:", e);
+    }
+    setArchiveOpen(false);
+  }
+
+  async function handleAddMember(member: TeamMember) {
+    if (!project) return;
+    try {
+      await projectsService.addMember(project.id, member.id);
+      setTeamMembers(prev => [...prev, member]);
+    } catch (e: any) {
+      console.error("Error al añadir miembro:", e);
+      throw e; // Rethrow to let the dialog handle the error display
+    }
+  }
+
+  async function handleRemoveMember(userId: string) {
+    if (!project) return;
+    try {
+      await projectsService.removeMember(project.id, userId);
+      setTeamMembers(prev => prev.filter(m => m.id !== userId));
+    } catch (e: any) {
+      console.error("Error al quitar miembro:", e);
+      setActionError("No se pudo quitar al miembro del equipo.");
+      setTimeout(() => setActionError(null), 5000);
     }
   }
 
@@ -118,6 +173,14 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
+      {/* Action Error Banner */}
+      {actionError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+          {actionError}
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <div className="text-sm text-muted-foreground">
         <a href="/proyectos" className="hover:text-foreground">Proyectos</a> &gt; <span className="text-foreground font-medium">{project.name}</span>
@@ -135,16 +198,26 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
             {project.startDate} — {project.endDate}
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setEditOpen(true)}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>
-            Editar proyecto
-          </Button>
-          <Button variant="destructive" onClick={() => setArchiveOpen(true)}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m20 21-8-8-8 8V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>
-            Archivar
-          </Button>
-        </div>
+        {isManagement && (
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setEditOpen(true)}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>
+              Editar proyecto
+            </Button>
+            <Button 
+              variant={project.status === "archivado" ? "outline" : "destructive"} 
+              onClick={() => project.status === "archivado" ? handleToggleArchive() : setArchiveOpen(true)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {project.status === "archivado" 
+                  ? <path d="M3 7v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M12 7v10m0-10l-4 4m4-4l4 4M3 3h18"/> 
+                  : <path d="m20 21-8-8-8 8V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/>
+                }
+              </svg>
+              {project.status === "archivado" ? "Desarchivar" : "Archivar"}
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Tabs */}
@@ -285,9 +358,11 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
                 <span className="text-sm text-muted-foreground">{m.email || "—"}</span>
                 <Badge variant="outline" className="w-fit text-xs">{m.role}</Badge>
                 <div className="flex justify-end">
-                  <Button variant="ghost" size="icon-sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setTeamMembers((prev) => prev.filter((x) => x.id !== m.id))}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-                  </Button>
+                  {isManagement && (
+                    <Button variant="ghost" size="icon-sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleRemoveMember(m.id)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
@@ -359,14 +434,14 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
         </div>
       )}
 
-      {activeTab === "Tareas" && <KanbanBoard />}
+      {activeTab === "Tareas" && <KanbanBoard projectId={project.id} />}
       {activeTab === "GitHub" && <GitHubTab />}
       {activeTab === "Chat" && <ChatTab />}
 
       {/* Dialogs */}
       <ProjectFormDialog open={editOpen} onClose={() => setEditOpen(false)} onSave={handleEditSave} project={project} />
-      <ArchiveProjectDialog open={archiveOpen} onClose={() => setArchiveOpen(false)} onConfirm={handleArchive} project={project} />
-      <AddMemberDialog open={addMemberOpen} onClose={() => setAddMemberOpen(false)} onAdd={(m) => setTeamMembers((prev) => [...prev, m])} existingIds={teamMembers.map((m) => m.id)} />
+      <ArchiveProjectDialog open={archiveOpen} onClose={() => setArchiveOpen(false)} onConfirm={handleToggleArchive} project={project} />
+      <AddMemberDialog open={addMemberOpen} onClose={() => setAddMemberOpen(false)} onAdd={handleAddMember} existingIds={teamMembers.map((m) => m.id)} />
     </div>
   );
 }

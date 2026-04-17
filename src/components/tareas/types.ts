@@ -9,9 +9,20 @@ export interface Task {
   priority: TaskPriority;
   assignee: string;
   dueDate: string;
-  evidence: { name: string; size: string }[];
+  evidence: { 
+    id: string;
+    name: string; 
+    size: string; 
+    createdAt?: string; 
+    userId?: string;
+  }[];
   createdBy: string;
   createdAt: string;
+  history?: {
+    text: string;
+    sub: string;
+    date: string;
+  }[];
 }
 
 export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string }> = {
