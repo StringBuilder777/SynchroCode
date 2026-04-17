@@ -252,6 +252,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         onUploadEvidence={(id) => setUploadTaskId(id)} 
         onUpdateTask={handleUpdateTask}
         onDeleteTask={(t) => setDeleteTask(t)}
+        projectMembers={projectMembers}
         userMap={userMap} 
       />
       <DeleteTaskDialog open={!!deleteTask} onClose={() => setDeleteTask(null)} onConfirm={handleDelete} task={deleteTask} />

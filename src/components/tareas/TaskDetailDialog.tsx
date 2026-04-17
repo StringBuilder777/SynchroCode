@@ -17,14 +17,16 @@ interface Props {
   onUploadEvidence: (id: string) => void;
   onUpdateTask: (id: string, data: Partial<Task>) => Promise<void>;
   onDeleteTask: (task: Task) => void;
+  projectMembers?: { id: string; name: string }[];
   userMap?: Record<string, string>;
 }
 
-export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUploadEvidence, onUpdateTask, onDeleteTask, userMap = {} }: Props) {
+export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUploadEvidence, onUpdateTask, onDeleteTask, projectMembers = [], userMap = {} }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState<TaskPriority>("baja");
+  const [assignee, setAssignee] = useState("");
   const [isSaving, setIsEditing] = useState(false);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
@@ -34,23 +36,11 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
       setDescription(task.description);
       setDueDate(task.dueDate);
       setPriority(task.priority);
+      setAssignee(task.assignee || "");
     }
   }, [task, open]);
 
   if (!task) return null;
-  const pc = PRIORITY_CONFIG[task.priority] || { label: "BAJA", color: "bg-muted text-muted-foreground border-muted-foreground/30" };
-
-  async function handleDownload(evidenceId: string) {
-    setDownloadingId(evidenceId);
-    try {
-      const url = await tasksService.getEvidenceDownloadUrl(evidenceId);
-      window.open(url, "_blank");
-    } catch (error) {
-      console.error("Download error:", error);
-    } finally {
-      setDownloadingId(null);
-    }
-  }
 
   function formatDate(d: string) {
     if (!d) return "";
@@ -76,10 +66,20 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
   const creatorName = userMap[task.createdBy] || task.createdBy;
   const assigneeName = userMap[task.assignee] || task.assignee || "Sin asignar";
 
+  async function handleAssigneeChange(newAssignee: string) {
+    const val = newAssignee === "none" ? "" : newAssignee;
+    setAssignee(val);
+    try {
+      await onUpdateTask(task.id, { assignee: val });
+    } catch (error) {
+      console.error("Error updating assignee:", error);
+    }
+  }
+
   async function handleSave() {
     setIsEditing(true);
     try {
-      await onUpdateTask(task.id, { title, description, dueDate, priority });
+      await onUpdateTask(task.id, { title, description, dueDate, priority, assignee });
       onClose();
     } catch (error) {
       console.error("Error updating task:", error);
@@ -187,13 +187,18 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
           <div className="space-y-6">
             <div className="rounded-lg border p-4 space-y-4 text-sm">
               <div>
-                <p className="text-xs uppercase text-muted-foreground">Responsable</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <div className="flex size-7 items-center justify-center rounded-full bg-amber-500/20 text-amber-500 text-[10px] font-medium">
-                    {getInitials(assigneeName)}
-                  </div>
-                  <span className="font-medium">{assigneeName}</span>
-                </div>
+                <p className="text-xs uppercase text-muted-foreground mb-2">Responsable</p>
+                <Select value={assignee || "none"} onValueChange={handleAssigneeChange}>
+                  <SelectTrigger className="h-9 w-full bg-transparent border-muted">
+                    <SelectValue placeholder="Asignar a..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Sin asignar</SelectItem>
+                    {projectMembers.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <p className="text-xs uppercase text-muted-foreground">Proyecto</p>
@@ -228,10 +233,12 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
         </div>
 
         <DialogFooter className="flex items-center justify-between sm:justify-between border-t pt-4 mt-2">
-          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => onDeleteTask(task)}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-            Eliminar tarea
-          </Button>
+          {task.status === "pendiente" ? (
+            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => onDeleteTask(task)}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              Eliminar tarea
+            </Button>
+          ) : <div />}
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={onClose}>Cancelar</Button>
             <Button size="sm" onClick={handleSave} disabled={isSaving}>

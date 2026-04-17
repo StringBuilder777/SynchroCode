@@ -122,23 +122,31 @@ export const tasksService = {
     return (data || []).map(fromBackend);
   },
   createTask: async (data: any) => {
-    const { assignee, ...rest } = data;
+    const { assignee, status, priority, projectId, title, description, dueDate } = data;
+    
     const payload = {
-      ...rest,
-      assignedTo: assignee,
-      statusId: STATUS_MAP_TO_ID[data.status] || 1,
-      priorityId: PRIORITY_MAP_TO_ID[data.priority] || 3,
+      project_id: projectId,
+      title: title?.trim(),
+      description: description?.trim() || "",
+      status_id: STATUS_MAP_TO_ID[status || "pendiente"] || 1,
+      priority_id: PRIORITY_MAP_TO_ID[priority] || 3,
+      assigned_to: assignee || null,
+      due_date: dueDate || null
     };
+    
     const res = await api.post<any>(`/tasks`, payload);
     return fromBackend(res);
   },
   updateTask: async (id: string, data: any) => {
-    const { assignee, status, priority, ...rest } = data;
-    const payload: any = { ...rest };
+    const { assignee, status, priority, title, description, dueDate } = data;
+    const payload: any = {};
     
-    if (assignee !== undefined) payload.assignedTo = assignee;
-    if (status !== undefined) payload.statusId = STATUS_MAP_TO_ID[status];
-    if (priority !== undefined) payload.priorityId = PRIORITY_MAP_TO_ID[priority];
+    if (title !== undefined) payload.title = title.trim();
+    if (description !== undefined) payload.description = description?.trim() || "";
+    if (dueDate !== undefined) payload.due_date = dueDate || null;
+    if (assignee !== undefined) payload.assigned_to = assignee || null;
+    if (status !== undefined) payload.status_id = STATUS_MAP_TO_ID[status];
+    if (priority !== undefined) payload.priority_id = PRIORITY_MAP_TO_ID[priority];
     
     const res = await api.put<any>(`/tasks/${id}`, payload);
     return fromBackend(res);
@@ -173,7 +181,7 @@ export const tasksService = {
 
       // 2. Notificar al backend
       const payload = {
-        fileName: file.name,
+        fileName: sanitizedName,
         fileUrl: uploadData.path,
         fileSizeBytes: file.size
       };
