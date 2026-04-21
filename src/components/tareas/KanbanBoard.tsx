@@ -137,10 +137,13 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
   async function handleUploadEvidence(files: File[]) {
     if (!uploadTaskId) return;
     try {
-      await tasksService.uploadEvidence(uploadTaskId, files);
+      const newEvidences = await tasksService.uploadEvidence(uploadTaskId, files);
       await loadTasks();
-      // Si el diálogo de detalle está abierto, lo cerramos para forzar refresco al reabrir
-      // o simplemente dejamos que el usuario vea la lista actualizada.
+      
+      if (detailTask && detailTask.id === uploadTaskId) {
+        setDetailTask(prev => prev ? { ...prev, evidence: [...prev.evidence, ...(newEvidences || [])] } : null);
+      }
+      
       setUploadTaskId(null);
     } catch (error) {
       console.error("Error uploading evidence:", error);

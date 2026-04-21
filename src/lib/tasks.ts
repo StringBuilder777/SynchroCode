@@ -162,6 +162,7 @@ export const tasksService = {
     return fromBackend(res);
   },
   uploadEvidence: async (id: string, files: File[]) => {
+    const results = [];
     for (const file of files) {
       // 1. Subir a Supabase Storage
       const sanitizedName = file.name.replace(/[^\w.-]/g, "_");
@@ -187,9 +188,16 @@ export const tasksService = {
       };
       
       console.log("Notificando evidencia al backend...", payload);
-      await api.post(`/tasks/${id}/evidence`, payload);
+      const res = await api.post<any>(`/tasks/${id}/evidence`, payload);
+      results.push({
+        id: res.id ? String(res.id) : "",
+        name: res.fileName || res.name || "Archivo",
+        size: res.fileSize || res.size || (res.fileSizeBytes ? (res.fileSizeBytes > 1048576 ? `${(res.fileSizeBytes / 1048576).toFixed(1)} MB` : `${(res.fileSizeBytes / 1024).toFixed(0)} KB`) : "0 KB"),
+        createdAt: res.uploadedAt || res.createdAt || new Date().toISOString(),
+        userId: res.uploadedBy || res.userId || ""
+      });
     }
-    return null;
+    return results;
   },
   getEvidenceDownloadUrl: async (evidenceId: string) => {
     const res = await api.get<{ url: string }>(`/tasks/evidence/${evidenceId}/download`);
