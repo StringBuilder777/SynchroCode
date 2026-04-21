@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import { normalizeAuthError } from "@/lib/errors";
 
 export function PasswordRecoveryForm() {
   const [email, setEmail] = useState("");
@@ -22,8 +23,8 @@ export function PasswordRecoveryForm() {
       if (error) throw error;
       sessionStorage.setItem("recovery_email", email);
       window.location.href = "/recuperar-contrasena/confirmacion";
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al enviar el correo. Intenta de nuevo.");
+    } catch (err: unknown) {
+      setError(normalizeAuthError(err, "Error al enviar el correo. Intenta de nuevo."));
       setLoading(false);
     }
   }

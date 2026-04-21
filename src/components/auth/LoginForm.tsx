@@ -11,6 +11,21 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const setSpanishValidationMessage = (input: HTMLInputElement) => {
+    if (input.validity.valueMissing) {
+      input.setCustomValidity(
+        input.type === "password" ? "Ingresa tu contraseña." : "Ingresa tu correo electrónico.",
+      );
+      return;
+    }
+
+    if (input.validity.typeMismatch) {
+      input.setCustomValidity("Ingresa un correo electrónico válido.");
+      return;
+    }
+
+    input.setCustomValidity("");
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -58,6 +73,8 @@ export function LoginForm() {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onInvalid={(e) => setSpanishValidationMessage(e.currentTarget)}
+                  onInput={(e) => e.currentTarget.setCustomValidity("")}
                   required
                 />
               </div>
@@ -70,6 +87,8 @@ export function LoginForm() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onInvalid={(e) => setSpanishValidationMessage(e.currentTarget)}
+                  onInput={(e) => e.currentTarget.setCustomValidity("")}
                   required
                 />
               </div>

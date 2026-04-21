@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { usersService } from "@/lib/users";
 import type { User } from "@/components/usuarios/types";
 import { getInitials, getAvatarColor } from "@/components/usuarios/types";
+import { normalizeUserError } from "@/lib/errors";
 
 export function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -24,7 +25,7 @@ export function ProfilePage() {
         setUser(u);
         setName(u.name);
       })
-      .catch((e: Error) => setError(e.message))
+      .catch((e: unknown) => setError(normalizeUserError(e, { fallback: "No se pudo cargar el perfil." })))
       .finally(() => setLoading(false));
   }, []);
 
@@ -37,7 +38,7 @@ export function ProfilePage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Error al guardar");
+      setError(normalizeUserError(e, { fallback: "No se pudieron guardar los cambios." }));
     } finally {
       setSaving(false);
     }

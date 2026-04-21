@@ -14,6 +14,7 @@ import { DeactivateUserDialog } from "./DeactivateUserDialog";
 import type { User } from "./types";
 import { getInitials, getAvatarColor } from "./types";
 import { usersService } from "@/lib/users";
+import { isErrorStatus, normalizeUserError } from "@/lib/errors";
 
 const ROLES_FILTER = ["Administrador", "Gerente de Proyecto", "Desarrollador Senior", "Desarrollador Junior", "Programador", "Invitado / Cliente"];
 
@@ -21,6 +22,7 @@ export function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [restrictedAccess, setRestrictedAccess] = useState(false);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
@@ -32,7 +34,10 @@ export function UsersPage() {
   useEffect(() => {
     usersService.getAll()
       .then(setUsers)
-      .catch((e: Error) => setError(e.message))
+      .catch((e: unknown) => {
+        setRestrictedAccess(isErrorStatus(e, 403));
+        setError(normalizeUserError(e, { fallback: "No se pudieron cargar los usuarios." }));
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -51,9 +56,14 @@ export function UsersPage() {
     setUsers(updated);
   }
 
-  async function handleUpdateRole(userId: string, role: string) {
-    await usersService.updateRole(userId, role);
-    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, role } : u)));
+  async function handleUpdateUser(userId: string, data: { name?: string; role?: string }) {
+    if (data.name) {
+      await usersService.updateName(userId, data.name);
+    }
+    if (data.role) {
+      await usersService.updateRole(userId, data.role);
+    }
+    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, ...data } : u)));
   }
 
   async function handleDelete(userId: string) {
@@ -75,8 +85,7 @@ export function UsersPage() {
   }
 
   if (error) {
-    const is403 = error.includes("403");
-    if (is403) {
+    if (restrictedAccess) {
       return (
         <div className="flex min-h-[80vh] items-center justify-center p-6">
           <div className="flex max-w-md flex-col items-center text-center space-y-6">
@@ -219,7 +228,7 @@ export function UsersPage() {
         open={formOpen}
         onClose={() => { setFormOpen(false); setEditingUser(null); }}
         onInvite={handleInvite}
-        onUpdateRole={handleUpdateRole}
+        onUpdateUser={handleUpdateUser}
         user={editingUser}
       />
       <DeactivateUserDialog

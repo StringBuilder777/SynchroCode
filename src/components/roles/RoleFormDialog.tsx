@@ -21,6 +21,7 @@ import {
   type ModuleKey,
   type ActionKey,
 } from "./types";
+import { normalizeUserError } from "@/lib/errors";
 
 interface Props {
   open: boolean;
@@ -99,12 +100,13 @@ export function RoleFormDialog({ open, onClose, onSave, role }: Props) {
     try {
       await onSave({ name: name.trim(), description: description.trim(), permissions });
       onClose();
-    } catch (err: any) {
-      if (err.message?.includes("409")) {
-        setError("Ya existe un rol con ese nombre en su organización o es un rol reservado del sistema.");
-      } else {
-        setError(err.message || "Error al guardar el rol.");
-      }
+    } catch (err: unknown) {
+      setError(
+        normalizeUserError(err, {
+          fallback: "No se pudo guardar el rol.",
+          duplicateMessage: "Ya existe un rol con ese nombre en su organización o es un rol reservado del sistema.",
+        }),
+      );
     }
   }
 

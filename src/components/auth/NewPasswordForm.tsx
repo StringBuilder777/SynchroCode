@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import { normalizeAuthError } from "@/lib/errors";
 
 export function NewPasswordForm() {
   const [password, setPassword] = useState("");
@@ -51,7 +52,7 @@ export function NewPasswordForm() {
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password });
     if (error) {
-      setError(error.message);
+      setError(normalizeAuthError(error, "No se pudo actualizar la contraseña."));
       setLoading(false);
     } else {
       window.location.href = "/login?reset=ok";

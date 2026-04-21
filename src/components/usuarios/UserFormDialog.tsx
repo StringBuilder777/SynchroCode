@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import type { BackendRole } from "@/components/roles/types";
+import { normalizeUserError } from "@/lib/errors";
 import {
   Dialog,
   DialogContent,
@@ -24,11 +25,11 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onInvite: (data: { email: string; name: string; role: string }) => Promise<void>;
-  onUpdateRole: (userId: string, role: string) => Promise<void>;
+  onUpdateUser: (userId: string, data: { name?: string; role?: string }) => Promise<void>;
   user?: User | null;
 }
 
-export function UserFormDialog({ open, onClose, onInvite, onUpdateRole, user }: Props) {
+export function UserFormDialog({ open, onClose, onInvite, onUpdateUser, user }: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
@@ -71,13 +72,21 @@ export function UserFormDialog({ open, onClose, onInvite, onUpdateRole, user }: 
     setSaving(true);
     try {
       if (isEdit) {
-        await onUpdateRole(user.id, role);
+        await onUpdateUser(user.id, { 
+          name: name.trim() !== user.name ? name.trim() : undefined,
+          role: role !== user.role ? role : undefined 
+        });
       } else {
         await onInvite({ email: email.trim(), name: name.trim(), role });
       }
       onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al guardar.");
+    } catch (err: unknown) {
+      setError(
+        normalizeUserError(err, {
+          fallback: isEdit ? "No se pudo actualizar el usuario." : "No se pudo enviar la invitación.",
+          duplicateMessage: "Ya existe un usuario con ese correo electrónico.",
+        }),
+      );
     } finally {
       setSaving(false);
     }
@@ -87,7 +96,7 @@ export function UserFormDialog({ open, onClose, onInvite, onUpdateRole, user }: 
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-[460px]">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Editar Rol" : "Invitar Usuario"}</DialogTitle>
+          <DialogTitle>{isEdit ? "Modificar Usuario" : "Invitar Usuario"}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -104,7 +113,6 @@ export function UserFormDialog({ open, onClose, onInvite, onUpdateRole, user }: 
               placeholder="María García"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              disabled={isEdit}
             />
           </div>
 
@@ -117,6 +125,7 @@ export function UserFormDialog({ open, onClose, onInvite, onUpdateRole, user }: 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isEdit}
+              title={isEdit ? "El correo electrónico no se puede cambiar directamente." : ""}
             />
           </div>
 
@@ -139,7 +148,7 @@ export function UserFormDialog({ open, onClose, onInvite, onUpdateRole, user }: 
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-primary"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
             <p className="text-sm text-muted-foreground">
               {isEdit
-                ? "Los cambios de rol se aplicarán en el próximo inicio de sesión del usuario."
+                ? "Los cambios se aplicarán inmediatamente. El correo electrónico no se puede modificar por seguridad."
                 : "El usuario recibirá un correo de invitación con un link para establecer su contraseña."}
             </p>
           </div>

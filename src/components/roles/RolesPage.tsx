@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { RoleFormDialog } from "./RoleFormDialog";
 import { DeleteRoleDialog } from "./DeleteRoleDialog";
 import { api } from "@/lib/api";
+import { normalizeUserError } from "@/lib/errors";
 import {
   type Role,
   type BackendRole,
@@ -31,8 +32,8 @@ export function RolesPage() {
         permissions: transformFromBackend(br.permissions),
       }));
       setRoles(transformedRoles);
-    } catch (err: any) {
-      setError(err.message || "Error al cargar los roles");
+    } catch (err: unknown) {
+      setError(normalizeUserError(err, { fallback: "No se pudieron cargar los roles." }));
     } finally {
       setLoading(false);
     }

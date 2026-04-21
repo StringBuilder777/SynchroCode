@@ -7,11 +7,12 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import type { Project } from "./types";
+import { normalizeUserError } from "@/lib/errors";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSave: (data: Pick<Project, "name" | "description" | "startDate" | "endDate">) => void;
+  onSave: (data: Pick<Project, "name" | "description" | "startDate" | "endDate">) => Promise<void>;
   project?: Project | null;
 }
 
@@ -21,6 +22,7 @@ export function ProjectFormDialog({ open, onClose, onSave, project }: Props) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (project) {
@@ -32,15 +34,30 @@ export function ProjectFormDialog({ open, onClose, onSave, project }: Props) {
       setName(""); setDescription(""); setStartDate(""); setEndDate("");
     }
     setError("");
+    setLoading(false);
   }, [project, open]);
 
-  function handleSave() {
+  async function handleSave() {
     if (!name.trim()) { setError("El nombre es obligatorio."); return; }
     if (startDate && endDate && endDate < startDate) {
       setError("La fecha de fin no puede ser anterior a la de inicio."); return;
     }
-    onSave({ name: name.trim(), description: description.trim(), startDate, endDate });
-    onClose();
+    
+    setLoading(true);
+    setError("");
+    try {
+      await onSave({ name: name.trim(), description: description.trim(), startDate, endDate });
+    } catch (e: unknown) {
+      setError(
+        normalizeUserError(e, {
+          fallback: "No se pudo guardar el proyecto.",
+          duplicateMessage: "Ya existe un proyecto con ese nombre.",
+          invalidDataMessage: "Verifica los datos del proyecto e inténtalo de nuevo.",
+        }),
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -55,26 +72,26 @@ export function ProjectFormDialog({ open, onClose, onSave, project }: Props) {
           )}
           <div className="space-y-2">
             <Label>Nombre del proyecto</Label>
-            <Input placeholder="Ej: Portal de clientes v2" value={name} onChange={(e) => setName(e.target.value)} />
+            <Input placeholder="Ej: Portal de clientes v2" value={name} onChange={(e) => setName(e.target.value)} disabled={loading} />
           </div>
           <div className="space-y-2">
             <Label>Descripción</Label>
-            <Textarea placeholder="Objetivo y alcance del proyecto" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+            <Textarea placeholder="Objetivo y alcance del proyecto" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} disabled={loading} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Fecha de inicio</Label>
-              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} disabled={loading} />
             </div>
             <div className="space-y-2">
               <Label>Fecha de fin estimada</Label>
-              <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+              <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} disabled={loading} />
             </div>
           </div>
         </div>
         <DialogFooter className="flex-col gap-2 sm:flex-col">
-          <Button className="w-full" onClick={handleSave}>Guardar</Button>
-          <Button variant="outline" className="w-full" onClick={onClose}>Cancelar</Button>
+          <Button className="w-full" onClick={handleSave} disabled={loading}>{loading ? "Guardando..." : "Guardar"}</Button>
+          <Button variant="outline" className="w-full" onClick={onClose} disabled={loading}>Cancelar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
