@@ -7,6 +7,7 @@ import { getInitials, getAvatarColor } from "./types";
 import { usersService } from "@/lib/users";
 import { api } from "@/lib/api";
 import type { BackendRole } from "@/components/roles/types";
+import { normalizeUserError } from "@/lib/errors";
 
 interface Props {
   open: boolean;
@@ -69,8 +70,16 @@ export function AddMemberDialog({ open, onClose, onAdd, existingIds }: Props) {
         setSelected(null); 
         setSearch(""); 
         onClose(); 
-      } catch (e: any) {
-        setError(e.message || "Error al añadir el miembro. Posiblemente ya pertenezca a otro proyecto.");
+      } catch (e: unknown) {
+        setError(
+          normalizeUserError(e, {
+            fallback: "No se pudo agregar el integrante al proyecto.",
+            duplicateMessage: "Ese integrante ya forma parte del proyecto.",
+            forbiddenMessage: "No tienes permisos para agregar integrantes.",
+            notFoundMessage: "No se encontró el integrante seleccionado.",
+            invalidDataMessage: "No se pudo agregar el integrante. Verifica los datos e inténtalo de nuevo.",
+          }),
+        );
       } finally {
         setAdding(false);
       }

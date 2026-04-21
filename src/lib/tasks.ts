@@ -69,7 +69,7 @@ function fromBackend(t: any): Task {
 
   // Format evidence
   const evidence = (t.evidence || []).map((e: any) => ({
-    id: e.id,
+    id: e.id ? String(e.id) : "",
     name: e.fileName || e.name || "Archivo",
     size: e.fileSize || e.size || (e.fileSizeBytes ? (e.fileSizeBytes > 1048576 ? `${(e.fileSizeBytes / 1048576).toFixed(1)} MB` : `${(e.fileSizeBytes / 1024).toFixed(0)} KB`) : "0 KB"),
     createdAt: e.createdAt || t.createdAt,

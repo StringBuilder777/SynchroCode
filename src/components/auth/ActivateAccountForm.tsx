@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { PasswordStrengthBar } from "./PasswordStrengthBar";
 import { supabase } from "@/lib/supabase";
+import { normalizeAuthError } from "@/lib/errors";
 
 export function ActivateAccountForm() {
   const [password, setPassword] = useState("");
@@ -70,7 +71,7 @@ export function ActivateAccountForm() {
 
     const { error } = await supabase.auth.updateUser({ password });
     if (error) {
-      setError(error.message);
+      setError(normalizeAuthError(error, "No se pudo activar la cuenta."));
       setLoading(false);
     } else {
       window.location.href = "/login?activated=ok";

@@ -76,6 +76,25 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
     }
   }
 
+  async function handleDownload(evidenceId: string) {
+    if (!evidenceId) return;
+    setDownloadingId(evidenceId);
+    try {
+      const url = await tasksService.getEvidenceDownloadUrl(evidenceId);
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error downloading evidence:", error);
+    } finally {
+      setDownloadingId(null);
+    }
+  }
+
   async function handleSave() {
     setIsEditing(true);
     try {
@@ -166,7 +185,7 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
                     variant="ghost" 
                     size="icon-sm" 
                     onClick={() => handleDownload(e.id)}
-                    disabled={downloadingId === e.id}
+                    disabled={!e.id || downloadingId === e.id}
                   >
                     {downloadingId === e.id ? (
                       <div className="size-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />

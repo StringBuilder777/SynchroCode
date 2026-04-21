@@ -61,6 +61,10 @@ export const usersService = {
     await api.put(`/users/${id}/role`, { role });
   },
 
+  updateName: async (id: string, name: string): Promise<void> => {
+    await api.put(`/users/${id}/name`, { name });
+  },
+
   delete: async (id: string): Promise<void> => {
     await api.delete(`/users/${id}`);
   },

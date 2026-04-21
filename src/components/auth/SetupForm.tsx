@@ -8,6 +8,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { api } from "@/lib/api";
+import { normalizeAuthError, normalizeUserError } from "@/lib/errors";
 
 export function SetupForm() {
   const [name, setName] = useState("");
@@ -51,7 +52,7 @@ export function SetupForm() {
       });
 
       if (signUpError) {
-        setError(signUpError.message);
+        setError(normalizeAuthError(signUpError, "No se pudo crear la cuenta."));
         setLoading(false);
         return;
       }
@@ -63,7 +64,7 @@ export function SetupForm() {
       });
 
       if (loginError) {
-        setError(loginError.message);
+        setError(normalizeAuthError(loginError, "No se pudo iniciar sesión con la cuenta creada."));
         setLoading(false);
         return;
       }
@@ -77,7 +78,7 @@ export function SetupForm() {
       });
 
       if (updateError) {
-        setError(updateError.message);
+        setError(normalizeAuthError(updateError, "No se pudo actualizar el perfil del usuario."));
         setLoading(false);
         return;
       }
@@ -86,14 +87,14 @@ export function SetupForm() {
       const { error: refreshError } = await supabase.auth.refreshSession();
 
       if (refreshError) {
-        setError(refreshError.message);
+        setError(normalizeAuthError(refreshError, "No se pudo actualizar la sesión."));
         setLoading(false);
         return;
       }
 
       window.location.href = "/proyectos";
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Ocurrió un error inesperado.");
+    } catch (err: unknown) {
+      setError(normalizeUserError(err, { fallback: "No se pudo completar la configuración inicial." }));
       setLoading(false);
     }
   }

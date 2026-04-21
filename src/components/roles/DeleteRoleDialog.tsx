@@ -6,6 +6,7 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import type { Role } from "./types";
+import { isErrorStatus, normalizeUserError } from "@/lib/errors";
 
 interface Props {
   open: boolean;
@@ -35,11 +36,11 @@ export function DeleteRoleDialog({ open, onClose, onConfirm, role }: Props) {
     try {
       await onConfirm(role!.id);
       onClose();
-    } catch (err: any) {
-      if (err.message?.includes("409")) {
+    } catch (err: unknown) {
+      if (isErrorStatus(err, 409)) {
         setError(`Este rol está asignado a usuario(s) activo(s). Reasígnalos antes de eliminar.`);
       } else {
-        setError(err.message || "Error al eliminar el rol.");
+        setError(normalizeUserError(err, { fallback: "No se pudo eliminar el rol." }));
       }
     } finally {
       setIsSubmitting(false);

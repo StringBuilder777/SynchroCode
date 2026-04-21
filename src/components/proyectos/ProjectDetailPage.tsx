@@ -11,6 +11,7 @@ import type { Project, TeamMember } from "./types";
 import { STATUS_CONFIG, getInitials, getAvatarColor } from "./types";
 import { projectsService } from "@/lib/projects";
 import { usersService } from "@/lib/users";
+import { normalizeUserError } from "@/lib/errors";
 
 const ACTIVITY = [
   { task: "Rediseño de navbar", status: "en_proceso", time: "hace 4 horas" },
@@ -87,8 +88,8 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
             };
           })
         );
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e: unknown) {
+        setError(normalizeUserError(e, { fallback: "No se pudo cargar el proyecto." }));
       } finally {
         setLoading(false);
       }
@@ -104,10 +105,11 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
     try {
       const updated = await projectsService.update(project.id, data);
       setProject(updated);
+      setEditOpen(false);
     } catch (e) {
       console.error("Error al actualizar proyecto:", e);
+      throw e;
     }
-    setEditOpen(false);
   }
 
   async function handleToggleArchive() {
@@ -142,9 +144,15 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
     try {
       await projectsService.removeMember(project.id, userId);
       setTeamMembers(prev => prev.filter(m => m.id !== userId));
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Error al quitar miembro:", e);
-      setActionError("No se pudo quitar al miembro del equipo.");
+      setActionError(
+        normalizeUserError(e, {
+          fallback: "No se pudo quitar al miembro del equipo.",
+          forbiddenMessage: "No tienes permisos para quitar integrantes.",
+          notFoundMessage: "No se encontró el integrante seleccionado.",
+        }),
+      );
       setTimeout(() => setActionError(null), 5000);
     }
   }

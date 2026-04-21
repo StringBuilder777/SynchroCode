@@ -7,6 +7,7 @@ import type { Project } from "./types";
 import { STATUS_CONFIG, getInitials, getAvatarColor } from "./types";
 import { projectsService } from "@/lib/projects";
 import { usersService } from "@/lib/users";
+import { normalizeUserError } from "@/lib/errors";
 
 const TABS = [
   { key: "activos", label: "Activos" },
@@ -33,8 +34,8 @@ export function ProjectsPage() {
         ]);
         setProjects(projectsData);
         setUserRole(userData.role);
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e: unknown) {
+        setError(normalizeUserError(e, { fallback: "No se pudieron cargar los proyectos." }));
       } finally {
         setLoading(false);
       }
@@ -63,10 +64,12 @@ export function ProjectsPage() {
         const created = await projectsService.create(data);
         setProjects((prev) => [...prev, created]);
       }
+      setEditingProject(null);
+      setFormOpen(false);
     } catch (e) {
       console.error("Error al guardar proyecto:", e);
+      throw e;
     }
-    setEditingProject(null);
   }
 
   function formatDate(d: string) {
