@@ -74,17 +74,23 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
         setProject(p);
         setUserRole(userData.role);
         
-        // Fetch all users to get names/emails for the member list
-        const allOrgUsers = await usersService.getAll();
+        // Wrap fetching all users in try-catch to allow non-admins to enter even if they can't list all users
+        let allOrgUsers: any[] = [];
+        try {
+          allOrgUsers = await usersService.getAll();
+        } catch (e) {
+          console.warn("Could not fetch all users list, using basic member data from project endpoint:", e);
+        }
         
+        // membersData now contains name and role from the backend
         setTeamMembers(
           membersData.map((m: any) => {
-            const u = allOrgUsers.find(user => user.id === m.userId);
+            const u = allOrgUsers.find((user: any) => user.id === m.userId);
             return {
               id: m.userId,
-              name: u?.name || "Usuario Desconocido",
+              name: m.name || u?.name || "Miembro del equipo",
               email: u?.email || "",
-              role: u?.role || "Miembro", // In a real app, role might come from project_team table
+              role: m.role || u?.role || "Miembro",
             };
           })
         );
@@ -99,6 +105,9 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
   }, [resolvedId]);
 
   const isManagement = userRole === "Administrador" || userRole === "Gerente";
+
+  // Filter tabs based on role
+  const visibleTabs = TABS.filter(t => t !== "Equipo" || isManagement);
 
   async function handleEditSave(data: Pick<Project, "name" | "description" | "startDate" | "endDate">) {
     if (!project) return;
@@ -230,7 +239,7 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
 
       {/* Tabs */}
       <div className="flex gap-6 border-b">
-        {TABS.map((t) => (
+        {visibleTabs.map((t) => (
           <button key={t} onClick={() => setActiveTab(t)} className={`pb-3 text-sm font-medium transition-colors border-b-2 ${activeTab === t ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
             {t}
           </button>
@@ -444,7 +453,7 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
 
       {activeTab === "Tareas" && <KanbanBoard projectId={project.id} />}
       {activeTab === "GitHub" && <GitHubTab />}
-      {activeTab === "Chat" && <ChatTab />}
+      {activeTab === "Chat" && <ChatTab projectId={project.id} teamMembers={teamMembers} />}
 
       {/* Dialogs */}
       <ProjectFormDialog open={editOpen} onClose={() => setEditOpen(false)} onSave={handleEditSave} project={project} />
