@@ -252,13 +252,25 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
       </div>
 
       {/* Tab content */}
-      {activeTab === "Resumen" && (
+      {activeTab === "Resumen" && (() => {
+        const completedTasksCount = tasks.filter(t => t.status === 'terminado').length;
+        const pendingTasksCount = tasks.filter(t => t.status === 'pendiente' || t.status === 'en_proceso').length;
+        const totalProjectTasks = tasks.length;
+        const calcPct = totalProjectTasks > 0 ? Math.round((completedTasksCount / totalProjectTasks) * 100) : 0;
+        
+        // Find creator name
+        const creatorName = teamMembers.find(m => m.id === project.createdBy)?.name || project.createdBy;
+        
+        // Recent activity from tasks
+        const recentTasks = [...tasks].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()).slice(0, 4);
+
+        return (
         <div className="space-y-6">
           {/* Stats */}
           <div className="grid grid-cols-4 gap-4">
             {[
-              { label: "TOTAL DE TAREAS", value: project.totalTasks, sub: `(${project.completedTasks} completadas)` },
-              { label: "EN PROCESO", value: project.totalTasks - project.completedTasks, sub: "pendientes" },
+              { label: "TOTAL DE TAREAS", value: totalProjectTasks, sub: `(${completedTasksCount} completadas)` },
+              { label: "EN PROCESO", value: pendingTasksCount, sub: "pendientes" },
               { label: "MIEMBROS", value: teamMembers.length, sub: "" },
               { label: "DÍAS RESTANTES", value: daysLeft, sub: `Vence ${project.endDate}` },
             ].map((s) => (
@@ -278,13 +290,13 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
                 <div className="grid grid-cols-4 gap-4 pt-2 text-sm">
                   <div><p className="text-xs uppercase text-muted-foreground">Inicio</p><p className="font-medium">{project.startDate}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Entrega</p><p className="font-medium">{project.endDate}</p></div>
-                  <div><p className="text-xs uppercase text-muted-foreground">Creado por</p><p className="font-medium">{project.createdBy}</p></div>
+                  <div><p className="text-xs uppercase text-muted-foreground">Creado por</p><p className="font-medium truncate pr-2" title={creatorName}>{creatorName}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Estado</p><p className="font-medium text-primary">{cfg.label}</p></div>
                 </div>
                 <div className="rounded-lg bg-secondary p-4 space-y-2">
-                  <div className="flex justify-between text-sm"><span className="font-medium">Progreso general</span><span className="text-primary font-semibold">{pct}%</span></div>
-                  <div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} /></div>
-                  <p className="text-xs text-muted-foreground">{project.completedTasks} de {project.totalTasks} tareas completadas</p>
+                  <div className="flex justify-between text-sm"><span className="font-medium">Progreso general</span><span className="text-primary font-semibold">{calcPct}%</span></div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary" style={{ width: `${calcPct}%` }} /></div>
+                  <p className="text-xs text-muted-foreground">{completedTasksCount} de {totalProjectTasks} tareas completadas</p>
                 </div>
               </div>
 
@@ -292,19 +304,24 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
               <div className="rounded-lg border p-6 space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold">Actividad reciente</h3>
-                  <button className="text-sm text-primary hover:underline">Ver todo</button>
+                  <a href="?tab=Tareas" onClick={(e) => { e.preventDefault(); setActiveTab("Tareas"); }} className="text-sm text-primary hover:underline">Ver todo</a>
                 </div>
                 <div className="space-y-0">
                   <div className="grid grid-cols-3 gap-4 text-xs uppercase tracking-wide text-muted-foreground pb-2 border-b">
                     <span>Tarea</span><span>Estado</span><span>Actualización</span>
                   </div>
-                  {ACTIVITY.map((a) => {
-                    const sb = STATUS_BADGE[a.status];
+                  {recentTasks.length === 0 ? (
+                    <div className="py-4 text-center text-sm text-muted-foreground">No hay tareas creadas.</div>
+                  ) : recentTasks.map((t) => {
+                    let sb = STATUS_BADGE[t.status] || STATUS_BADGE.pendiente;
+                    
+                    let dateStr = t.createdAt ? new Date(t.createdAt).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }) : "Reciente";
+                    
                     return (
-                      <div key={a.task} className="grid grid-cols-3 gap-4 py-3 border-b last:border-0 items-center text-sm">
-                        <span>{a.task}</span>
-                        <Badge variant="outline" className={`w-fit text-[10px] ${sb.cls}`}>{sb.label}</Badge>
-                        <span className="text-muted-foreground">{a.time}</span>
+                      <div key={t.id} className="grid grid-cols-3 gap-4 py-3 border-b last:border-0 items-center text-sm">
+                        <span className="truncate">{t.title}</span>
+                        <Badge variant="outline" className={`w-fit text-[10px] uppercase ${sb.cls}`}>{t.status.replace("_", " ")}</Badge>
+                        <span className="text-muted-foreground">{dateStr}</span>
                       </div>
                     );
                   })}
@@ -356,7 +373,8 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {activeTab === "Equipo" && (
         <div className="space-y-4">
