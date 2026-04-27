@@ -51,6 +51,8 @@ export function normalizeUserError(error: unknown, options: NormalizeErrorOption
   if (
     message.includes("duplicate")
     || message.includes("already exists")
+    || message.includes("already been registered")
+    || message.includes("email_exists")
     || message.includes("ya existe")
     || message.includes("unique")
   ) {
