@@ -20,11 +20,16 @@ function shouldGroupWithPrev(messages: ChatMessage[], index: number) {
 function formatTime(isoString: string | number | undefined) {
   if (!isoString) return "";
   try {
-    // Si es un número (timestamp de Unix en segundos o ms), lo convertimos
     const date = typeof isoString === 'number' 
       ? new Date(isoString * (isoString < 10000000000 ? 1000 : 1)) 
       : new Date(isoString);
-    return date.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; 
+    const minStr = minutes < 10 ? '0' + minutes : minutes;
+    return `${hours}:${minStr} ${ampm}`;
   } catch {
     return "";
   }
