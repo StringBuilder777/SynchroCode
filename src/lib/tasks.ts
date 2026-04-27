@@ -85,7 +85,7 @@ function fromBackend(t: any): Task {
 
   if (history.length === 0) {
     // Fallback if no history is provided but we have evidence
-    evidence.forEach(e => {
+    evidence.forEach((e: any) => {
       history.push({
         text: `Se adjuntó ${e.name}`,
         sub: e.userId,
@@ -108,7 +108,7 @@ function fromBackend(t: any): Task {
     status,
     priority,
     assignee: t.assignedTo || t.assigned_to || t.userId || t.assigneeId || t.user_id || t.assignee_id || t.userName || t.assigneeName || t.assignee || "",
-    dueDate: t.dueDate || "",
+    dueDate: t.dueDate || t.due_date || "",
     evidence,
     createdBy: t.createdBy || "Sistema",
     createdAt: t.createdAt || "",
