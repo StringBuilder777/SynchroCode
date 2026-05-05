@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { Task, TaskPriority } from "./types";
 
 interface Props {
@@ -35,6 +41,13 @@ export function TaskFormDialog({ open, onClose, onSave, task, projectMembers = [
   function handleSave() {
     if (!title.trim()) { setError("El título de la tarea es obligatorio."); return; }
     if (!priority) { setError("Selecciona una prioridad."); return; }
+    if (dueDate) {
+      const today = new Date().toISOString().split("T")[0];
+      if (dueDate < today) {
+        setError("La fecha de entrega no puede estar en el pasado.");
+        return;
+      }
+    }
     onSave({ title: title.trim(), description: description.trim(), priority: priority as TaskPriority, assignee, dueDate });
     onClose();
   }
@@ -79,7 +92,30 @@ export function TaskFormDialog({ open, onClose, onSave, task, projectMembers = [
           </div>
           <div className="space-y-2">
             <Label>Fecha de entrega</Label>
-            <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !dueDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dueDate ? format(parseISO(dueDate), "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={dueDate ? parseISO(dueDate) : undefined}
+                  onSelect={(date) => setDueDate(date ? format(date, "yyyy-MM-dd") : "")}
+                  disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                  initialFocus
+                  locale={es}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
         <DialogFooter>

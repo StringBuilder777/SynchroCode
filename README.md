@@ -108,3 +108,9 @@ Los componentes estáticos no necesitan directiva.
 ### Path alias
 
 `@/*` apunta a `./src/*`.
+
+
+crear la imagen de Synchrocode WEB con docker
+```Docker
+docker build -t synchrocode-web .
+```

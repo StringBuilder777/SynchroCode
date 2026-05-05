@@ -54,7 +54,8 @@ export function KanbanPage() {
 
   function formatDate(d: string) {
     if (!d) return "";
-    const date = new Date(d + "T00:00:00");
+    const dateString = d.length === 10 ? d + "T12:00:00" : d;
+    const date = new Date(dateString);
     return date.toLocaleDateString("es", { day: "2-digit", month: "short" });
   }
 
