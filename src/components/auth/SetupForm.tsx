@@ -132,6 +132,7 @@ export function SetupForm() {
                 placeholder="Ej: Carlos Mendoza"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                maxLength={100}
                 required
               />
             </div>
@@ -144,6 +145,7 @@ export function SetupForm() {
                 placeholder="Ej: admin@empresa.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                maxLength={255}
                 required
               />
             </div>
@@ -157,6 +159,7 @@ export function SetupForm() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  maxLength={255}
                   required
                   className="pr-10"
                 />
@@ -185,6 +188,7 @@ export function SetupForm() {
                 placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                maxLength={255}
                 required
               />
             </div>
@@ -197,6 +201,7 @@ export function SetupForm() {
                 placeholder="Ej: Mi Empresa S.A."
                 value={orgName}
                 onChange={(e) => setOrgName(e.target.value)}
+                maxLength={100}
                 required
               />
             </div>
