@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { GithubIcon } from "./GithubIcon";
 import { ThemeToggle } from "./ThemeToggle";
 import { supabase } from "@/lib/supabase";
+import { checkAndRedirectIfNoOrganization } from "@/lib/organizationSetup";
 
 const steps = [
   { label: "Conexión con GitHub establecida", key: "connect" },
@@ -14,32 +15,50 @@ export function GitHubAuthLoading() {
   const [currentStep, setCurrentStep] = useState(0);
   const [authError, setAuthError] = useState("");
 
+  const handlePostAuthRedirect = async () => {
+    setCurrentStep(1);
+    setTimeout(() => setCurrentStep(2), 800);
+
+    // Check if user has organization, if not redirect to org setup instead
+    const hasOrganization = await checkAndRedirectIfNoOrganization();
+    if (hasOrganization) {
+      setTimeout(() => { window.location.href = "/proyectos"; }, 1600);
+    }
+  };
+
   useEffect(() => {
+    let mounted = true;
+
     // Supabase processes the OAuth tokens from the URL automatically on page load.
     // We listen for the SIGNED_IN event and then redirect.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setCurrentStep(1);
-        setTimeout(() => setCurrentStep(2), 800);
-        setTimeout(() => { window.location.href = "/proyectos"; }, 1600);
+      if (mounted && event === "SIGNED_IN" && session) {
+        handlePostAuthRedirect();
         subscription.unsubscribe();
       }
     });
 
     // Also check if session already exists (e.g. page reload after auth)
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        setCurrentStep(2);
-        setTimeout(() => { window.location.href = "/proyectos"; }, 500);
+      if (mounted && data.session) {
+        handlePostAuthRedirect();
+      }
+    }).catch((err) => {
+      if (mounted) {
+        console.error("Error getting session:", err);
+        setAuthError("No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.");
       }
     });
 
-    // Fallback: if no session after 10s, redirect to login
+    // Fallback: if no session after 10s, show error
     const timeout = setTimeout(() => {
-      setAuthError("No se pudo autenticar. Intenta de nuevo.");
+      if (mounted) {
+        setAuthError("No se pudo autenticar. Verifica tu conexión e intenta de nuevo.");
+      }
     }, 10000);
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
       clearTimeout(timeout);
     };

@@ -97,6 +97,17 @@ export function normalizeAuthError(error: unknown, fallback: string): string {
   const raw = getRawErrorMessage(error);
   const message = raw.toLowerCase();
 
+  // Check for network errors first
+  if (
+    message.includes("failed to fetch")
+    || message.includes("network")
+    || message.includes("networkerror")
+    || message.includes("connection")
+    || message.includes("timeout")
+  ) {
+    return "Error de red. Intenta de nuevo.";
+  }
+
   if (message.includes("invalid login credentials")) {
     return "Correo o contraseña incorrectos.";
   }

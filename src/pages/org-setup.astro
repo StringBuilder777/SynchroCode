@@ -1,0 +1,8 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import { OrganizationSetupForm } from "@/components/auth/OrganizationSetupForm";
+---
+
+<AuthLayout title="Crear organización">
+  <OrganizationSetupForm client:load />
+</AuthLayout>

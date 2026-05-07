@@ -72,9 +72,9 @@ export function SetupForm() {
       // 3. Create org in backend
       const org = await api.post<{ id: string }>("/organizations", { name: orgName.trim() });
 
-      // 4. Save organizationId in user_metadata
+      // 4. Save organizationId in user_metadata (role already set during signup)
       const { error: updateError } = await supabase.auth.updateUser({
-        data: { organizationId: org.id },
+        data: { organizationId: org.id, role: "Administrador" },
       });
 
       if (updateError) {

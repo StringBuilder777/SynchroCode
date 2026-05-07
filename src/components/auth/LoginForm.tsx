@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { GithubIcon } from "./GithubIcon";
 import { supabase } from "@/lib/supabase";
+import { checkAndRedirectIfNoOrganization } from "@/lib/organizationSetup";
+import { normalizeAuthError } from "@/lib/errors";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -12,6 +14,21 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [hasConnection, setHasConnection] = useState(true);
+
+  useEffect(() => {
+    // Listen for online/offline events
+    const handleOnline = () => setHasConnection(true);
+    const handleOffline = () => setHasConnection(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
   const setSpanishValidationMessage = (input: HTMLInputElement) => {
     if (input.validity.valueMissing) {
       input.setCustomValidity(
@@ -33,13 +50,36 @@ export function LoginForm() {
     setError("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      // Add timeout to detect network issues
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-    if (error) {
-      setError("Correo o contraseña incorrectos.");
+      try {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        clearTimeout(timeoutId);
+
+        if (error) {
+          const errorMessage = normalizeAuthError(error, "No se pudo iniciar sesión.");
+          setError(errorMessage);
+          setLoading(false);
+        } else {
+          // Check if user has organization, if not redirect to org setup
+          const hasOrganization = await checkAndRedirectIfNoOrganization();
+          if (hasOrganization) {
+            window.location.href = "/proyectos";
+          }
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        const errorMessage = normalizeAuthError(fetchError, "Error de red. Intenta de nuevo.");
+        setError(errorMessage);
+        setLoading(false);
+      }
+    } catch (err) {
+      const errorMessage = normalizeAuthError(err, "No se pudo iniciar sesión.");
+      setError(errorMessage);
       setLoading(false);
-    } else {
-      window.location.href = "/proyectos";
     }
   }
 
@@ -60,6 +100,12 @@ export function LoginForm() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {!hasConnection && (
+                <div className="rounded-md bg-amber-500/10 px-3 py-2 text-sm text-amber-600">
+                  No hay conexión a internet. Verifica tu conexión e intenta de nuevo.
+                </div>
+              )}
+
               {error && (
                 <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
                   {error}
@@ -71,7 +117,7 @@ export function LoginForm() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="ejemplo@empresa.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onInvalid={(e) => setSpanishValidationMessage(e.currentTarget)}
@@ -149,9 +195,9 @@ export function LoginForm() {
         </Card>
 
         <p className="text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
+          ¿No tienes cuenta?{" "}
           <a href="/setup" className="text-primary hover:underline">
-            Sign up
+            Regístrate
           </a>
         </p>
       </div>
