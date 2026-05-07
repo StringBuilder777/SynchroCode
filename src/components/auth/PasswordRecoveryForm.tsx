@@ -13,15 +13,27 @@ export function PasswordRecoveryForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError("Ingresa tu correo electrónico.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError("Ingresa un correo electrónico válido.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
         redirectTo: `${window.location.origin}/recuperar-contrasena/nueva`,
       });
       if (error) throw error;
-      sessionStorage.setItem("recovery_email", email);
+      sessionStorage.setItem("recovery_email", trimmedEmail);
       window.location.href = "/recuperar-contrasena/confirmacion";
     } catch (err: unknown) {
       setError(normalizeAuthError(err, "Error al enviar el correo. Intenta de nuevo."));
@@ -60,11 +72,14 @@ export function PasswordRecoveryForm() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="ejemplo@empresa.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Ej: usuario@empresa.com
+                </p>
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
