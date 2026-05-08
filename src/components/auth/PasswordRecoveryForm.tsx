@@ -75,6 +75,7 @@ export function PasswordRecoveryForm() {
                   placeholder="ejemplo@empresa.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  maxLength={255}
                   required
                 />
                 <p className="text-xs text-muted-foreground mt-1">

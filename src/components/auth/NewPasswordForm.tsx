@@ -113,6 +113,7 @@ export function NewPasswordForm() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    maxLength={255}
                     required
                     className="pr-10"
                   />
