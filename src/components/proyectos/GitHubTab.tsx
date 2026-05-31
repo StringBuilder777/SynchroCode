@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import type { Project, TeamMember } from "./types";
+import type { GitHubCollaborator, GitHubStats } from "@/lib/projects";
 
 // ── Mock data ──────────────────────────────────────────────────────────────────
 
@@ -50,7 +52,7 @@ function GitHubIcon({ size = 18 }: { size?: number }) {
 
 // ── Unlinked state ─────────────────────────────────────────────────────────────
 
-function UnlinkedState({ onConnect }: { onConnect: () => void }) {
+function UnlinkedState({ onConnect, creating }: { onConnect: () => void; creating?: boolean }) {
   return (
     <div className="space-y-6">
       {/* Empty state */}
@@ -64,9 +66,9 @@ function UnlinkedState({ onConnect }: { onConnect: () => void }) {
             Conecta un repositorio de GitHub para hacer seguimiento de commits, pull requests y automatizar tareas.
           </p>
         </div>
-        <Button onClick={onConnect}>
+        <Button onClick={onConnect} disabled={creating}>
           <GitHubIcon size={16} />
-          Conectar con GitHub
+          {creating ? "Creando repositorio..." : "Crear repositorio"}
         </Button>
       </div>
 
@@ -380,13 +382,289 @@ function WebhookConfig() {
 type ViewState = "unlinked" | "selecting" | "linked";
 type SubTab = "actividad" | "webhooks";
 
-export function GitHubTab() {
+function ProjectRepoActivity({
+  project,
+  stats,
+  teamMembers = [],
+  onMemberGithubUpdated,
+}: {
+  project: Project;
+  stats?: GitHubStats | null;
+  teamMembers?: TeamMember[];
+  onMemberGithubUpdated?: (userId: string, githubUsername: string) => void;
+}) {
+  const repoName = project.repoUrl?.replace("https://github.com/", "") ?? project.name;
+  const [githubUsername, setGithubUsername] = useState("");
+  const [collaborators, setCollaborators] = useState<GitHubCollaborator[]>([]);
+  const [memberSelections, setMemberSelections] = useState<Record<string, string>>({});
+  const [loadingCollaborators, setLoadingCollaborators] = useState(true);
+  const [linkingLogin, setLinkingLogin] = useState<string | null>(null);
+  const [inviting, setInviting] = useState(false);
+  const [inviteStatus, setInviteStatus] = useState<string | null>(null);
+
+  async function loadCollaborators() {
+    setLoadingCollaborators(true);
+    try {
+      const { projectsService } = await import("@/lib/projects");
+      const data = await projectsService.getGitHubCollaborators(project.id);
+      setCollaborators(data);
+    } catch (e) {
+      console.error("Error al cargar colaboradores de GitHub:", e);
+      setCollaborators([]);
+    } finally {
+      setLoadingCollaborators(false);
+    }
+  }
+
+  async function handleLinkCollaborator(collaborator: GitHubCollaborator) {
+    const userId = memberSelections[collaborator.login];
+    if (!userId) return;
+
+    setLinkingLogin(collaborator.login);
+    setInviteStatus(null);
+    try {
+      const { projectsService } = await import("@/lib/projects");
+      await projectsService.updateMemberGitHubUsername(project.id, userId, collaborator.login);
+      onMemberGithubUpdated?.(userId, collaborator.login);
+      setInviteStatus(`@${collaborator.login} quedó vinculado al miembro seleccionado.`);
+    } catch (e) {
+      console.error("Error al vincular colaborador con miembro:", e);
+      setInviteStatus("No se pudo vincular el colaborador con el miembro.");
+    } finally {
+      setLinkingLogin(null);
+    }
+  }
+
+  useEffect(() => {
+    loadCollaborators();
+  }, [project.id]);
+
+  async function handleInvite() {
+    const username = githubUsername.trim();
+    if (!username) return;
+
+    setInviting(true);
+    setInviteStatus(null);
+    try {
+      const { projectsService } = await import("@/lib/projects");
+      await projectsService.addGitHubCollaborator(project.id, username);
+      setGithubUsername("");
+      setInviteStatus(`Invitación enviada a ${username}.`);
+      await loadCollaborators();
+    } catch (e) {
+      console.error("Error al invitar colaborador de GitHub:", e);
+      setInviteStatus("No se pudo invitar. Revisa el username, token y permisos de la organización.");
+    } finally {
+      setInviting(false);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="rounded-lg border p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Repositorio</span>
+            <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-500">CONECTADO</Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <GitHubIcon size={18} />
+            <code className="text-sm font-medium">{repoName}</code>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M6 9v12"/></svg>
+              main
+            </span>
+            <span>Repositorio privado</span>
+          </div>
+          {project.repoUrl && (
+            <a href={project.repoUrl} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline">
+              Abrir repositorio en GitHub
+            </a>
+          )}
+        </div>
+
+        <div className="rounded-lg border p-4 space-y-3">
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Actividad</span>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { n: stats ? String(stats.commits) : "—", l: "Commits" },
+              { n: stats ? String(stats.pullRequests) : "—", l: "PRs" },
+              { n: stats ? String(stats.linked) : "—", l: "Vinculadas" },
+            ].map((s) => (
+              <div key={s.l} className="rounded-lg border p-2 text-center">
+                <div className="text-xl font-bold">{s.n}</div>
+                <div className="text-[10px] text-muted-foreground">{s.l}</div>
+              </div>
+            ))}
+          </div>
+          <div className="text-xs text-muted-foreground">
+            La sincronización de commits y pull requests quedará lista cuando se conecten webhooks.
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border p-5 space-y-3">
+        <h4 className="font-semibold">Información del repositorio</h4>
+        <div className="grid grid-cols-3 gap-4 text-sm">
+          <div>
+            <p className="text-xs uppercase text-muted-foreground">Proyecto</p>
+            <p className="font-medium">{project.name}</p>
+          </div>
+          <div>
+            <p className="text-xs uppercase text-muted-foreground">Organización</p>
+            <p className="font-medium">SynchroCode67</p>
+          </div>
+          <div>
+            <p className="text-xs uppercase text-muted-foreground">Permisos de equipo</p>
+            <p className="font-medium">Push</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border p-5 space-y-3">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h4 className="font-semibold">Colaboradores de GitHub</h4>
+            <p className="text-xs text-muted-foreground">Usuarios con acceso directo al repositorio privado.</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={loadCollaborators} disabled={loadingCollaborators}>
+            Actualizar
+          </Button>
+        </div>
+
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="GitHub username"
+            value={githubUsername}
+            onChange={(e) => setGithubUsername(e.target.value)}
+            className="h-9 flex-1 rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+          />
+          <Button onClick={handleInvite} disabled={!githubUsername.trim() || inviting}>
+            {inviting ? "Invitando..." : "Invitar"}
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          GitHub enviará una invitación con permiso push al repositorio privado.
+        </p>
+        {inviteStatus && (
+          <p className="text-xs text-muted-foreground">{inviteStatus}</p>
+        )}
+
+        <div className="rounded-lg border overflow-hidden">
+          <div className="grid grid-cols-[1fr_120px_220px_90px] gap-4 border-b bg-muted/50 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <span>Usuario</span><span>Permiso</span><span>Miembro</span><span className="text-right">Acción</span>
+          </div>
+          {loadingCollaborators ? (
+            <div className="px-4 py-6 text-center text-sm text-muted-foreground">Cargando colaboradores...</div>
+          ) : collaborators.length === 0 ? (
+            <div className="px-4 py-6 text-center text-sm text-muted-foreground">No hay colaboradores disponibles.</div>
+          ) : collaborators.map((collaborator) => {
+            const linkedMember = teamMembers.find((member) => member.githubUsername?.toLowerCase() === collaborator.login.toLowerCase());
+
+            return (
+            <div key={collaborator.login} className="grid grid-cols-[1fr_120px_220px_90px] gap-4 border-b last:border-0 px-4 py-3 items-center">
+              <div className="flex items-center gap-3 min-w-0">
+                {collaborator.avatarUrl ? (
+                  <img src={collaborator.avatarUrl} alt={collaborator.login} className="size-8 rounded-full" />
+                ) : (
+                  <div className="flex size-8 items-center justify-center rounded-full bg-secondary text-xs font-medium">
+                    {collaborator.login.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">@{collaborator.login}</p>
+                  <p className="text-xs text-muted-foreground">GitHub</p>
+                </div>
+              </div>
+              <Badge variant="outline" className="w-fit text-xs">
+                {collaborator.permission === "admin" ? "Admin" : collaborator.permission === "push" ? "Push" : "Read"}
+              </Badge>
+              <div>
+                {linkedMember ? (
+                  <Badge variant="outline" className="border-emerald-500/30 text-emerald-500">
+                    {linkedMember.name}
+                  </Badge>
+                ) : (
+                  <select
+                    value={memberSelections[collaborator.login] ?? ""}
+                    onChange={(e) => setMemberSelections(prev => ({ ...prev, [collaborator.login]: e.target.value }))}
+                    className="h-8 w-full rounded-md border bg-background px-2 text-xs outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="">Vincular miembro...</option>
+                    {teamMembers.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              <div className="flex justify-end">
+                {!linkedMember ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleLinkCollaborator(collaborator)}
+                    disabled={!memberSelections[collaborator.login] || linkingLogin === collaborator.login}
+                  >
+                    {linkingLogin === collaborator.login ? "..." : "Vincular"}
+                  </Button>
+                ) : collaborator.htmlUrl ? (
+                  <a href={collaborator.htmlUrl} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline">
+                    Perfil
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                )}
+              </div>
+            </div>
+          )})}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function GitHubTab({
+  project,
+  stats,
+  teamMembers,
+  onMemberGithubUpdated,
+  onRepositoryCreated,
+}: {
+  project?: Project;
+  stats?: GitHubStats | null;
+  teamMembers?: TeamMember[];
+  onMemberGithubUpdated?: (userId: string, githubUsername: string) => void;
+  onRepositoryCreated?: (project: Project) => void;
+}) {
   const [view, setView] = useState<ViewState>("unlinked");
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [subTab, setSubTab] = useState<SubTab>("actividad");
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleConnect() {
-    setView("selecting");
+  async function handleConnect() {
+    if (!project || !onRepositoryCreated) {
+      setView("selecting");
+      return;
+    }
+
+    setCreating(true);
+    setError(null);
+    try {
+      const { projectsService } = await import("@/lib/projects");
+      const updated = await projectsService.createGitHubRepository(project.id);
+      onRepositoryCreated(updated);
+    } catch (e) {
+      console.error("Error al crear repositorio de GitHub:", e);
+      setError("No se pudo crear el repositorio. Revisa GITHUB_TOKEN y permisos de la organización.");
+    } finally {
+      setCreating(false);
+    }
   }
 
   function handleSelectRepo(id: string) {
@@ -400,8 +678,28 @@ export function GitHubTab() {
     setSubTab("actividad");
   }
 
+  if (project?.repoUrl) {
+    return (
+      <ProjectRepoActivity
+        project={project}
+        stats={stats}
+        teamMembers={teamMembers}
+        onMemberGithubUpdated={onMemberGithubUpdated}
+      />
+    );
+  }
+
   if (view === "unlinked") {
-    return <UnlinkedState onConnect={handleConnect} />;
+    return (
+      <div className="space-y-4">
+        {error && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+        <UnlinkedState onConnect={handleConnect} creating={creating} />
+      </div>
+    );
   }
 
   if (view === "selecting") {

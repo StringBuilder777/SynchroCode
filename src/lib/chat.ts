@@ -33,8 +33,9 @@ export const chatService = {
       return `${effectivePath}${effectivePath.includes("?") ? "&" : "?"}userId=${userId}`;
     }
 
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const apiBase = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
+    const wsBase = apiBase.replace(/^http:/, "ws:").replace(/^https:/, "wss:");
     const cleanPath = effectivePath.startsWith("/") ? effectivePath : `/${effectivePath}`;
-    return `${protocol}//${window.location.host}${cleanPath}?userId=${userId}`;
+    return `${wsBase}${cleanPath}?userId=${userId}`;
   }
 };

@@ -11,6 +11,7 @@ import type { Project, TeamMember } from "./types";
 import type { Task } from "@/components/tareas/types";
 import { STATUS_CONFIG, getInitials, getAvatarColor } from "./types";
 import { projectsService } from "@/lib/projects";
+import type { GitHubStats } from "@/lib/projects";
 import { tasksService } from "@/lib/tasks";
 import { usersService } from "@/lib/users";
 import { normalizeUserError } from "@/lib/errors";
@@ -53,6 +54,7 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [githubStats, setGithubStats] = useState<GitHubStats | null>(null);
 
   // Resolve the project ID: from props or from the URL on the client
   const resolvedId = projectId ?? (typeof window !== "undefined"
@@ -78,6 +80,13 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
         setProject(p);
         setUserRole(userData.role);
         setTasks(tasksData);
+        if (p.repoUrl) {
+          projectsService.getGitHubStats(p.id)
+            .then(setGithubStats)
+            .catch(() => setGithubStats(null));
+        } else {
+          setGithubStats(null);
+        }
         
         // Wrap fetching all users in try-catch to allow non-admins to enter even if they can't list all users
         let allOrgUsers: any[] = [];
@@ -96,6 +105,7 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
               name: m.name || u?.name || "Miembro del equipo",
               email: u?.email || "",
               role: m.role || u?.role || "Miembro",
+              githubUsername: m.githubUsername || u?.githubUsername || "",
             };
           })
         );
@@ -145,7 +155,7 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
   async function handleAddMember(member: TeamMember) {
     if (!project) return;
     try {
-      await projectsService.addMember(project.id, member.id);
+      await projectsService.addMember(project.id, member.id, member.githubUsername);
       setTeamMembers(prev => [...prev, member]);
     } catch (e: any) {
       console.error("Error al añadir miembro:", e);
@@ -358,11 +368,23 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     GitHub
                   </h3>
-                  <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-500">CONECTADO</Badge>
+                  <Badge variant="outline" className={project.repoUrl ? "text-[10px] border-emerald-500/30 text-emerald-500" : "text-[10px]"}>
+                    {project.repoUrl ? "CONECTADO" : "PENDIENTE"}
+                  </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground font-mono">synchrocode-org / {project.name.toLowerCase().replace(/\s+/g, "-")}</p>
+                {project.repoUrl ? (
+                  <a href={project.repoUrl} target="_blank" rel="noreferrer" className="block truncate text-sm text-primary hover:underline font-mono">
+                    {project.repoUrl.replace("https://github.com/", "")}
+                  </a>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Este proyecto todavía no tiene repositorio vinculado.</p>
+                )}
                 <div className="grid grid-cols-3 gap-2">
-                  {[{ n: "—", l: "COMMITS" }, { n: "—", l: "PRS" }, { n: "—", l: "VINCULADAS" }].map((s) => (
+                  {[
+                    { n: githubStats ? String(githubStats.commits) : "—", l: "COMMITS" },
+                    { n: githubStats ? String(githubStats.pullRequests) : "—", l: "PRS" },
+                    { n: githubStats ? String(githubStats.linked) : "—", l: "VINCULADAS" },
+                  ].map((s) => (
                     <div key={s.l} className="rounded-lg border p-2 text-center">
                       <div className="text-lg font-bold">{s.n}</div>
                       <div className="text-[10px] text-muted-foreground">{s.l}</div>
@@ -386,17 +408,28 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
             </Button>
           </div>
           <div className="rounded-lg border overflow-hidden">
-            <div className="grid grid-cols-[1fr_1.5fr_1fr_80px] gap-4 border-b bg-muted/50 px-6 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              <span>Nombre</span><span>Email</span><span>Rol</span><span className="text-right">Acción</span>
+            <div className="grid grid-cols-[1fr_1.3fr_0.8fr_1.2fr_90px] gap-4 border-b bg-muted/50 px-6 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <span>Nombre</span><span>Email</span><span>Rol</span><span>GitHub</span><span className="text-right">Acción</span>
             </div>
             {teamMembers.map((m) => (
-              <div key={m.id} className="grid grid-cols-[1fr_1.5fr_1fr_80px] gap-4 border-b last:border-0 px-6 py-4 items-center">
+              <div key={m.id} className="grid grid-cols-[1fr_1.3fr_0.8fr_1.2fr_90px] gap-4 border-b last:border-0 px-6 py-4 items-center">
                 <div className="flex items-center gap-3">
                   <div className={`flex size-8 items-center justify-center rounded-full text-xs font-medium ${getAvatarColor(m.name)}`}>{getInitials(m.name)}</div>
                   <span className="font-medium text-sm">{m.name}</span>
                 </div>
                 <span className="text-sm text-muted-foreground">{m.email || "—"}</span>
                 <Badge variant="outline" className="w-fit text-xs">{m.role}</Badge>
+                <div>
+                  {m.githubUsername ? (
+                    <Badge variant="outline" className="border-emerald-500/30 text-emerald-500">
+                      @{m.githubUsername}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-muted-foreground">
+                      Sin vincular
+                    </Badge>
+                  )}
+                </div>
                 <div className="flex justify-end">
                   {isManagement && (
                     <Button variant="ghost" size="icon-sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleRemoveMember(m.id)}>
@@ -497,7 +530,24 @@ export function ProjectDetailPage({ projectId, initialTab }: Props) {
       })()}
 
       {activeTab === "Tareas" && <KanbanBoard projectId={project.id} />}
-      {activeTab === "GitHub" && <GitHubTab />}
+      {activeTab === "GitHub" && (
+        <GitHubTab
+          project={project}
+          stats={githubStats}
+          teamMembers={teamMembers}
+          onMemberGithubUpdated={(userId, githubUsername) => {
+            setTeamMembers(prev => prev.map(member => (
+              member.id === userId ? { ...member, githubUsername } : member
+            )));
+          }}
+          onRepositoryCreated={(updated) => {
+            setProject(updated);
+            projectsService.getGitHubStats(updated.id)
+              .then(setGithubStats)
+              .catch(() => setGithubStats(null));
+          }}
+        />
+      )}
       {activeTab === "Chat" && <ChatTab projectId={project.id} teamMembers={teamMembers} />}
 
       {/* Dialogs */}

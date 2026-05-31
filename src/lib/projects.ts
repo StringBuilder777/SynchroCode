@@ -13,6 +13,7 @@ export interface BackendProject {
   createdAt: string;
   updatedAt: string;
   archivedAt: string | null;
+  repoUrl: string | null;
 }
 
 export interface ProjectPayload {
@@ -20,6 +21,20 @@ export interface ProjectPayload {
   description: string;
   startDate: string;
   endDate: string;
+  githubUsernames?: string[];
+}
+
+export interface GitHubStats {
+  commits: number;
+  pullRequests: number;
+  linked: number;
+}
+
+export interface GitHubCollaborator {
+  login: string;
+  avatarUrl?: string | null;
+  htmlUrl?: string | null;
+  permission: string;
 }
 
 function fromBackend(p: BackendProject): Project {
@@ -42,6 +57,7 @@ function fromBackend(p: BackendProject): Project {
     completedTasks: 0,
     members: [],
     createdBy: p.createdBy,
+    repoUrl: p.repoUrl ?? undefined,
   };
 }
 
@@ -61,6 +77,23 @@ export const projectsService = {
   create: async (payload: ProjectPayload): Promise<Project> => {
     const data = await api.post<BackendProject>("/projects", payload);
     return fromBackend(data);
+  },
+
+  createGitHubRepository: async (id: string): Promise<Project> => {
+    const data = await api.post<BackendProject>(`/projects/${id}/github/repository`, {});
+    return fromBackend(data);
+  },
+
+  addGitHubCollaborator: async (id: string, githubUsername: string): Promise<void> => {
+    await api.post<void>(`/projects/${id}/github/collaborators`, { githubUsername });
+  },
+
+  getGitHubStats: async (id: string): Promise<GitHubStats> => {
+    return api.get<GitHubStats>(`/projects/${id}/github/stats`);
+  },
+
+  getGitHubCollaborators: async (id: string): Promise<GitHubCollaborator[]> => {
+    return api.get<GitHubCollaborator[]>(`/projects/${id}/github/collaborators`);
   },
 
   update: async (id: string, payload: ProjectPayload): Promise<Project> => {
@@ -85,8 +118,13 @@ export const projectsService = {
     return api.get<any[]>(`/projects/${projectId}/members`);
   },
 
-  addMember: async (projectId: string, userId: string): Promise<void> => {
-    await api.post<void>(`/projects/${projectId}/members/${userId}`, {});
+  addMember: async (projectId: string, userId: string, githubUsername?: string): Promise<void> => {
+    const query = githubUsername ? `?githubUsername=${encodeURIComponent(githubUsername)}` : '';
+    await api.post<void>(`/projects/${projectId}/members/${userId}${query}`, {});
+  },
+
+  updateMemberGitHubUsername: async (projectId: string, userId: string, githubUsername: string): Promise<any> => {
+    return api.put<any>(`/projects/${projectId}/members/${userId}/github`, { githubUsername });
   },
 
   removeMember: async (projectId: string, userId: string): Promise<void> => {
