@@ -14,9 +14,11 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/start.mjs ./start.mjs
+COPY --from=builder /app/src/ws-proxy.mjs ./ws-proxy.mjs
 
 ENV HOST=0.0.0.0
 ENV PORT=4321
 EXPOSE 4321
 
-CMD ["node", "./dist/server/entry.mjs"].
+CMD ["node", "./start.mjs"]

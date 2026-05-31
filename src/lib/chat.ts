@@ -28,15 +28,13 @@ export const chatService = {
 
   getWsUrl: (path: string | undefined, userId: string, channelId: string): string => {
     const effectivePath = path || `/ws/chat/${channelId}`;
-    
+
     if (effectivePath.startsWith("ws")) {
       return `${effectivePath}${effectivePath.includes("?") ? "&" : "?"}userId=${userId}`;
     }
 
-    const baseUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
-    const wsBaseUrl = baseUrl.replace(/^http/, "ws");
-    
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const cleanPath = effectivePath.startsWith("/") ? effectivePath : `/${effectivePath}`;
-    return `${wsBaseUrl}${cleanPath}?userId=${userId}`;
+    return `${protocol}//${window.location.host}${cleanPath}?userId=${userId}`;
   }
 };
