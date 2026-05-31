@@ -7,6 +7,7 @@ export interface BackendUser {
   email: string;
   name: string;
   role: string;
+  githubUsername?: string | null;
   createdAt: string;
   lastSignInAt: string | null;
 }
@@ -17,6 +18,7 @@ function fromBackend(u: BackendUser): User {
     name: u.name,
     email: u.email,
     role: u.role,
+    githubUsername: u.githubUsername ?? undefined,
     createdAt: u.createdAt,
     lastSignInAt: u.lastSignInAt,
   };

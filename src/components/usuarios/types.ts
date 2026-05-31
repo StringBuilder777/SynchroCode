@@ -3,6 +3,7 @@ export interface User {
   name: string;
   email: string;
   role: string;
+  githubUsername?: string;
   createdAt: string;
   lastSignInAt: string | null;
 }

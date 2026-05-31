@@ -41,7 +41,12 @@ export function Sidebar({ currentPath }: SidebarProps) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("theme");
+    let stored: string | null = null;
+    try {
+      stored = window.localStorage?.getItem("theme") ?? null;
+    } catch {
+      stored = null;
+    }
     const dark = stored ? stored === "dark" : true;
     setIsDark(dark);
     document.documentElement.classList.toggle("dark", dark);
@@ -53,7 +58,9 @@ export function Sidebar({ currentPath }: SidebarProps) {
     const next = !isDark;
     setIsDark(next);
     document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
+    try {
+      window.localStorage?.setItem("theme", next ? "dark" : "light");
+    } catch {}
   }
 
   return (

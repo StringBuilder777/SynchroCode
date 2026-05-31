@@ -9,6 +9,7 @@ export interface Project {
   completedTasks: number;
   members: { name: string; role: string }[];
   createdBy: string;
+  repoUrl?: string;
 }
 
 export interface TeamMember {
@@ -16,6 +17,7 @@ export interface TeamMember {
   name: string;
   email: string;
   role: string;
+  githubUsername?: string;
 }
 
 export const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
