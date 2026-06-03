@@ -27,6 +27,14 @@ interface Props {
   userMap?: Record<string, string>;
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  if (!(error instanceof Error) || !error.message) return fallback;
+  if (/→\s*403\b/.test(error.message) || /\b403\b/.test(error.message)) {
+    return "No tienes permiso para realizar esta acción.";
+  }
+  return error.message;
+}
+
 export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUploadEvidence, onUpdateTask, onDeleteTask, projectMembers = [], userMap = {} }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -35,6 +43,7 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
   const [assignee, setAssignee] = useState("");
   const [isSaving, setIsEditing] = useState(false);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (task) {
@@ -44,6 +53,7 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
       setPriority(task.priority);
       setAssignee(task.assignee || "");
     }
+    setErrorMessage("");
   }, [task, open]);
 
   if (!task) return null;
@@ -79,8 +89,11 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
     setAssignee(val);
     try {
       await onUpdateTask(task.id, { assignee: val });
+      setErrorMessage("");
     } catch (error) {
       console.error("Error updating assignee:", error);
+      setAssignee(task.assignee || "");
+      setErrorMessage(getErrorMessage(error, "No se pudo cambiar el responsable."));
     }
   }
 
@@ -111,6 +124,7 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
       onClose();
     } catch (error) {
       console.error("Error updating task:", error);
+      setErrorMessage(getErrorMessage(error, "No se pudieron guardar los cambios."));
     } finally {
       setIsEditing(false);
     }
@@ -119,6 +133,11 @@ export function TaskDetailDialog({ open, onClose, task, onStatusChange, onUpload
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-[740px] max-h-[90vh] overflow-y-auto">
+        {errorMessage && (
+          <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {errorMessage}
+          </div>
+        )}
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="space-y-4 flex-1 mr-4">
